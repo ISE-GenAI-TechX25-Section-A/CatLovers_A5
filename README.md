@@ -3,6 +3,7 @@
 ## Our Team
 TODO: Replace with your team members
 Oluwatobi Olajide
+Brian Rivera Alayón
 
 ## How to run the streamlit app
 
