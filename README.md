@@ -5,6 +5,7 @@ TODO: Replace with your team members
 Oluwatobi Olajide
 Brian Rivera Alayón
 Jade Collins
+Alexandra Fuentes Mercado
 
 ## How to run the streamlit app
 
