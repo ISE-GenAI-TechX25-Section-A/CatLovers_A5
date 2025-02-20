@@ -15,6 +15,10 @@ env:
   SERVICE_REGION: 'us-central1'
   SERVICE_ACCOUNT: '732301616375-compute@developer.gserviceaccount.com' # TODO: update to your Cloud service account
   WORKLOAD_IDENTITY_PROVIDER: 'projects/732301616375/locations/global/workloadIdentityPools/github/providers/project-repo' #TODO: update to your workload identity provider
+  WORKLOAD_IDENTITY_POOL_ID: 'projects/732301616375/locations/global/workloadIdentityPools/github'
+  PROJECT_NUMBER: '732301616375'
+  GITHUB_ORG: 'ISE-GenAI-TechX25-Section-A'
+  GITHUB_REPO_NAME: 'CatLovers_A5'
 
 jobs:
   py-checks:
