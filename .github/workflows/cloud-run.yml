@@ -5,7 +5,7 @@ name: Cloud Run Continuous Deployment
 on:
   push:
     # TODO: change 'none' to 'main' to enable the workflow to run
-    branches: 'Jade-Manual-Deploy'
+    branches: 'main'
   release:
     types: [published]
 

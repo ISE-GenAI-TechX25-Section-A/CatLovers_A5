@@ -41,7 +41,7 @@ users = {
     },
 }
 
-
+#used for individual workouts in "recent workouts"
 def get_user_sensor_data(user_id, workout_id):
     """Returns a list of timestampped information for a given workout.
 
