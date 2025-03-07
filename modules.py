@@ -8,6 +8,7 @@
 #############################################################################
 
 from internals import create_component
+import streamlit as st
 
 
 # This one has been written for you as an example. You may change it as wanted.
@@ -44,6 +45,11 @@ def display_recent_workouts(workouts_list):
     pass
 
 
-def display_genai_advice(timestamp, content, image):
-    """Write a good docstring here."""
-    pass
+def display_genai_advice(timestamp, content, image=None):
+    """Display AI-generated motivational advice with an optional image."""
+    st.header("🤖 AI-Generated Advice")
+    st.markdown(f"**Date:** {timestamp}")
+    st.write(content)
+
+    if image:
+        st.image(image, caption="Stay motivated!", use_container_width=True)
