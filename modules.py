@@ -74,8 +74,38 @@ def display_activity_summary(workouts_list):
 
 
 def display_recent_workouts(workouts_list):
-    """Write a good docstring here."""
-    pass
+    """
+    Displays a list of recent workouts for a user in Streamlit.
+
+    Parameters
+    ----------
+    workouts_list : list of dict
+        Each dict should contain workout details such as:
+        - 'workout_id'
+        - 'start_timestamp'
+        - 'end_timestamp'
+        - 'distance'
+        - 'steps'
+        - 'calories_burned'
+        - 'start_lat_lng'
+        - 'end_lat_lng' 
+    """
+    # If no workouts, show an info message
+    if not workouts_list:
+        st.info("No recent workouts found.")
+        return
+    # Display each workout in an expander
+    for workout in workouts_list:
+        with st.expander(f"Workout ID: {workout['workout_id']}"):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write(f"**Start Time:** {workout['start_timestamp']}")
+                st.write(f"**End Time:** {workout['end_timestamp']}")
+                st.write(f"**Distance:** {workout['distance']} km")
+                st.write(f"**Steps Taken:** {workout['steps']}")
+                st.write(f"**Calories Burned:** {workout['calories_burned']} kcal")
+                st.write(f"**Start Location (Lat, Lng):** {workout['start_lat_lng']}")
+                st.write(f"**End Location (Lat, Lng):** {workout['end_lat_lng']}")
 
 
 def display_genai_advice(timestamp, content, image=None):

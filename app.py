@@ -39,7 +39,8 @@ def display_app_page():
     elif page == "📊 Workout Summary":
         display_activity_summary(get_user_workouts(userId))
     elif page == "📅 Recent Workouts":
-        display_recent_workouts(get_user_workouts(userId))
+        import recent_workouts.py
+        display_recent_workouts()
     elif page == "📝 Posts":
         post_info = get_user_posts(userId)
         display_post(post_info)

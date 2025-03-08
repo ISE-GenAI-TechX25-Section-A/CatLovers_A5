@@ -84,7 +84,7 @@ def get_user_workouts(user_id):
             4 + random.randint(0, 100) / 100,
         )
         workouts.append({
-            'workout_id': f'workout{index}',
+            'workout_id': f'workout{index+1}',
             'start_timestamp': '2024-01-01 00:00:00',
             'end_timestamp': '2024-01-01 00:30:00',
             'start_lat_lng': random_lat_lng_1,
