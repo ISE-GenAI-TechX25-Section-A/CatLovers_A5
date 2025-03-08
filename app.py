@@ -21,12 +21,6 @@ def display_app_page():
     """Main function to run the app."""
     st.set_page_config(page_title="Muscle Meow", page_icon="🐱💪", layout="wide")
 
-    # Header Section
-    user_profile = get_user_profile(userId)
-    st.image(Logo_path, width=100)  
-    st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
-    st.subheader("Get fit, stay pawsome! 🐱🔥")
-
     # Sidebar Navigation
     st.sidebar.title("🏋️ Muscle Meow Navigation")
     page = st.sidebar.radio("Go to:", ["🏠 Home", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts"])
