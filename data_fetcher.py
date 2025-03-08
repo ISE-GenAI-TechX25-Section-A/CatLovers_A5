@@ -84,7 +84,7 @@ def get_user_workouts(user_id):
             4 + random.randint(0, 100) / 100,
         )
         workouts.append({
-            'workout_id': f'workout{index}',
+            'workout_id': f'workout{index+1}',
             'start_timestamp': '2024-01-01 00:00:00',
             'end_timestamp': '2024-01-01 00:30:00',
             'start_lat_lng': random_lat_lng_1,
@@ -105,24 +105,26 @@ def get_user_profile(user_id):
         raise ValueError(f'User {user_id} not found.')
     return users[user_id]
 
-
 def get_user_posts(user_id):
     """Returns a list of a user's posts.
 
-    This function currently returns random data. You will re-write it in Unit 3.
+    This function currently returns random data.
     """
     content = random.choice([
         'Had a great workout today!',
         'The AI really motivated me to push myself further, I ran 10 miles!',
     ])
-    return [{
-        'user_id': user_id,
+
+    user_info = get_user_profile(user_id)
+    
+    return {
+        'user_id': user_info['username'], 
         'post_id': 'post1',
         'timestamp': '2024-01-01 00:00:00',
         'content': content,
-        'image': 'image_url',
-    }]
-
+        'user_image': user_info['profile_image'], 
+        'post_image': 'https://i.imgur.com/61ZEkcrb.jpg', 
+    }
 
 def get_genai_advice(user_id):
     """Returns the most recent advice from the genai model.
