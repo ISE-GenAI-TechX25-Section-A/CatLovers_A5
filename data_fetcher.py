@@ -115,16 +115,15 @@ def get_user_posts(user_id):
         'The AI really motivated me to push myself further, I ran 10 miles!',
     ])
 
-    # Fetch user info from the 'users' dictionary for the user's profile image
     user_info = get_user_profile(user_id)
     
     return {
-        'user_id': user_info['username'],  # Use the username
+        'user_id': user_info['username'], 
         'post_id': 'post1',
         'timestamp': '2024-01-01 00:00:00',
         'content': content,
-        'user_image': user_info['profile_image'],  # Add the user's profile image
-        'post_image': 'https://i.imgur.com/61ZEkcrb.jpg',  # Placeholder for the post image
+        'user_image': user_info['profile_image'], 
+        'post_image': 'https://i.imgur.com/61ZEkcrb.jpg', 
     }
 
 def get_genai_advice(user_id):

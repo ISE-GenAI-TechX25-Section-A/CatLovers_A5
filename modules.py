@@ -41,30 +41,26 @@ def display_post(post_info):
     """
     
     with st.container():
-        # User Info (Profile Picture, Name, Timestamp)
-        col1, col2 = st.columns([1, 5])  # Create two columns: one for the image, one for text
+        col1, col2 = st.columns([1, 5]) 
         with col1:
-            st.image(post_info['user_image'], width=40)  # Smaller profile image for Instagram-style
+            st.image(post_info['user_image'], width=40) 
         with col2:
-            st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  # Username in bold
-            st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True)  # Smaller timestamp
+            st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  
+            st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 
 
-        # Post Image (if provided) - Instagram-style grid of images
         if post_info.get('post_image'):
-            st.image(post_info['post_image'], use_container_width=True, width=300)  # Even smaller image size
+            st.image(post_info['post_image'], width=300) 
 
-        # Post Content (short and to the point, Instagram-style caption)
         st.markdown(f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>", unsafe_allow_html=True)
 
-        # Divider for separation (similar to Instagram's post separation)
         st.markdown("<hr style='border: 0; border-top: 1px solid #ddd;'>", unsafe_allow_html=True)
         
         # Like and Comment buttons
-        col1, col2 = st.columns([1, 1])  # Create two columns for buttons
+        col1, col2 = st.columns([1, 1]) 
         with col1:
             like_button = st.button("Like", key=f"like_{post_info['post_id']}")
             if like_button:
-                st.write("You liked this post!")  # For simplicity, it shows a message when clicked
+                st.write("You liked this post!")
         with col2:
             comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}")
             if comment_button:
