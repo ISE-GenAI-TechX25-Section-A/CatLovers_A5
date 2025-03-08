@@ -31,9 +31,12 @@ class TestDisplayActivitySummary(unittest.TestCase):
 class TestDisplayGenAiAdvice(unittest.TestCase):
     """Tests the display_genai_advice function."""
 
-    def test_foo(self):
-        """Tests foo."""
-        pass
+    def test_display_genai_advice_renders(self):
+        """Tests if display_genai_advice runs without errors and displays advice correctly."""
+        app = AppTest(display_genai_advice, args=("2025-03-07", "Stay strong and keep pushing!", None))
+        self.assertFalse(app.exception)  
+        self.assertIn("Stay strong and keep pushing!", app.html)  
+        self.assertIn("2025-03-07", app.html)  
 
 
 class TestDisplayRecentWorkouts(unittest.TestCase):
