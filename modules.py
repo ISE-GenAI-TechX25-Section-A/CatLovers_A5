@@ -58,7 +58,7 @@ def display_post(post_info):
             st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 
 
         if post_info.get('post_image'):
-            st.image(post_info['post_image'], width=300) 
+            st.image(post_info['post_image'], width=350) 
 
         st.markdown(f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>", unsafe_allow_html=True)
 
