@@ -9,6 +9,8 @@ WORKLOAD_IDENTITY_PROVIDER=projects/732301616375/locations/global/workloadIdenti
 PROJECT_NUMBER=732301616375
 GITHUB_REPO_NAME=CatLovers_A5
 
+gcloud config set project brianrivera26techx25
+
 # run this command exactly
 gcloud iam workload-identity-pools create "github" \
     --project="${PROJECT_ID}" \

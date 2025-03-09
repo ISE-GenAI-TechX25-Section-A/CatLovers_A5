@@ -171,7 +171,8 @@ def display_activity_summary(workouts_list):
     with col1:
         st.subheader("Recent Workouts")
         if st.button("See More"):
-            page = "📅 Recent Workouts"
+            #page = "📅 Recent Workouts"
+            st.write("Functionality Currently Under Development")
             #pass
             #st.switch_page("/CatLovers_A5/[page_name].py")
 
@@ -189,7 +190,16 @@ def display_activity_summary(workouts_list):
             st.metric("Favorite Day of Week", fav_day_of_week)
             st.metric("Average Length of Workouts", workoutLength)
 
-    st.caption(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
+    #st.caption(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
+    st.markdown(
+    f"""
+    <div style="text-align: center; font-size: 0.8em;">
+        Congratulations! Your favorite time to workout is <b>{fav_time_of_day}</b>.
+        You work out most on <b>{fav_day_of_week}</b>. You burn an average of <b>{avg_calories}</b> calories in <b>{workoutLength}</b> time.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
     st.bar_chart(days_of_week, x_label="Weekday", y_label="Frequency")
 
