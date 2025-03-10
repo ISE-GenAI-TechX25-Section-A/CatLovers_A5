@@ -99,17 +99,22 @@ def display_activity_summary(workouts_list):
         Nothing
     
     """
+    distances = []
+    calories = []
+    steps = []
+    begin = []
+    end = []
     #get the data from each workout in the list
     for workout in workouts_list:
-        distances = [workout['distance']]
-        calories = [workout['calories_burned']]
-        steps = [workout['steps']]
-        begin = [workout['start_timestamp']]
-        end = [workout['end_timestamp']]
+        distances.append(workout['distance'])
+        calories.append(workout['calories_burned'])
+        steps.append(workout['steps'])
+        begin.append(workout['start_timestamp'])
+        end.append(workout['end_timestamp'])
     
-    avg_distances = statistics.mean(distances)
-    avg_calories = statistics.mean(calories)
-    avg_steps = statistics.mean(steps)
+    avg_distances = round(statistics.mean(distances), 2)
+    avg_calories = round(statistics.mean(calories), 2)
+    avg_steps = round(statistics.mean(steps), 2)
 
     morning = 0
     afternoon = 0
