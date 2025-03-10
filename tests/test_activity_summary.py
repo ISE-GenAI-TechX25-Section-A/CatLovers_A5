@@ -8,7 +8,8 @@ from modules import display_activity_summary
 
 
 class TestDisplayActivitySummary(unittest.TestCase):
-    
+    """Tests the display_activity_summary function."""
+
     def setUp(self):
         # Example test data for workouts
         self.workouts_list = [
@@ -34,56 +35,81 @@ class TestDisplayActivitySummary(unittest.TestCase):
             }
         ]
     
-    @patch('streamlit.columns')
-    @patch('streamlit.metric')
-    @patch('streamlit.caption')
-    @patch('streamlit.bar_chart')
-    def test_display_activity_summary(self, mock_bar_chart, mock_caption, mock_metric, mock_columns):
-        # Mock the columns to avoid actual Streamlit layout behavior
-        mock_columns.return_value = [None, None]  # Mock two columns
+    """Failed AppTest Attempt"""
+    # def test_display_activity_summary(self):
+    #     at = AppTest.from_file("app.py")
+    #     #at = AppTest(display_activity_summary, args=(self.workouts_list,))
+    #     at.run()
 
+    #     # file builds without exception
+    #     assert not at.exception
+
+    #     from modules import display_activity_summary
+    #     display_activity_summary(self.workouts_list)
+
+    #     print(at.subheader)
+    #     print(at.metric)
+    #     print(at.button)
+
+    #     #at.button[0].assert_called_with("Functionality Currently Under Development")
+    #     at.subheader.assert_any_call("Recent Workouts")
+    #     at.subheader.assert_any_call("Summary")
+    #     at.metric[0].assert_any_call("Average Calories Burned", 290)
+    #     at.metric[1].assert_any_call("Average Distance Travelled", 4.75)
+    #     at.metric[2].assert_any_call("Average Steps Taken", 4750)
+
+
+    @patch('streamlit.metric')
+    @patch('streamlit.subheader')
+    @patch('streamlit.button')
+    @patch('streamlit.write')
+    @patch('streamlit.markdown')
+    @patch('streamlit.bar_chart')
+    def test_display_activity_summary(self, mock_bar_chart, mock_markdown, mock_write, mock_button, mock_subheader, mock_metric):
         # Call the function to test
         display_activity_summary(self.workouts_list)
+        #print(mock_button.call_args_list)
+        print(mock_markdown.call_args_list)
 
-        # Test if the average distance was calculated correctly
-        avg_distances = statistics.mean([workout['distance'] for workout in self.workouts_list])
-        mock_metric.assert_any_call("Average Distance Travelled", avg_distances)
-
-        # Test if the average calories was calculated correctly
-        avg_calories = statistics.mean([workout['calories_burned'] for workout in self.workouts_list])
-        mock_metric.assert_any_call("Average Calories Burned", avg_calories)
-
-        # Test if the average steps was calculated correctly
-        avg_steps = statistics.mean([workout['steps'] for workout in self.workouts_list])
-        mock_metric.assert_any_call("Average Steps Taken", avg_steps)
-
-        # Test if the favorite time of day was calculated correctly
-        fav_time_of_day = "Morning"  # Based on the test data
-        mock_metric.assert_any_call("Favorite Time of Day", fav_time_of_day)
-
-        # Test if the favorite day of the week was calculated correctly
-        fav_day_of_week = "Monday"  # Based on the test data
-        mock_metric.assert_any_call("Favorite Day of Week", fav_day_of_week)
-
-        # Test if workout length is calculated correctly
-        # Calculate the expected workout length manually
-        lengths = [
-            (datetime.strptime(workout['end_timestamp'], "%Y-%m-%d %H:%M:%S") - datetime.strptime(workout['start_timestamp'], "%Y-%m-%d %H:%M:%S")).total_seconds()
-            for workout in self.workouts_list
+        # Check if elements were called with expected arguments
+        mock_button.assert_any_call("See More")
+        mock_write.assert_any_call("Functionality Currently Under Development")
+        mock_subheader.assert_any_call("Recent Workouts")
+        mock_subheader.assert_any_call("Summary")
+        mock_metric.assert_any_call("Average Calories Burned", 290)
+        mock_metric.assert_any_call("Average Distance Travelled", 4.75)
+        mock_metric.assert_any_call("Average Steps Taken", 4750)
+        mock_metric.assert_any_call("Favorite Time of Day", "Morning")
+        mock_metric.assert_any_call("Favorite Day of Week", "Saturday")
+        mock_metric.assert_any_call('Average Length of Workouts', '01:00:00')
+        
+        # checking for correct variables while ignoring whitespace discrepancies
+        expected_content = [
+            "<b>Morning</b>",
+            "<b>Saturday</b>",
+            "<b>290</b>",
+            "<b>01:00:00</b>"
         ]
-        avg_seconds = statistics.mean(lengths)
-        avg_duration = timedelta(seconds=avg_seconds)
-        hours, remainder = divmod(avg_duration.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        workoutLength = f"{hours:02}:{minutes:02}:{seconds:02}"
+        
+        # collect the markdown texts from the calls
+        called_texts = [call.args[0] for call in mock_markdown.call_args_list]
 
-        mock_metric.assert_any_call("Average Length of Workouts", workoutLength)
+        # assert that at least one call contains all the expected parts
+        assert any(all(part in text for part in expected_content) for text in called_texts), "Expected markdown call not found"
 
-        # Test if caption is correctly called
-        mock_caption.assert_called_with(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
+        # setting up variables to match mock workout_tests
+        monday = 0
+        tuesday = 0
+        wednesday = 0
+        thursday = 0
+        friday = 0
+        saturday = 1
+        sunday = 1
+        days_of_week = {"Monday":monday, "Tuesday":tuesday, "Wednesday":wednesday, "Thursday":thursday, "Friday":friday, "Saturday":saturday, "Sunday":sunday}
+        
 
-        # Test if the bar chart is called
-        mock_bar_chart.assert_called_once()
+        mock_bar_chart.assert_any_call(days_of_week, x_label="Weekday", y_label="Frequency")
+    
 
 if __name__ == '__main__':
     unittest.main()
