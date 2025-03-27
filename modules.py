@@ -15,7 +15,7 @@ from streamlit_elements import elements, mui, html
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-
+from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 
 
 
@@ -222,15 +222,19 @@ def display_recent_workouts(workouts_list):
     if not user_id:
         st.warning("⚠️ Please enter a valid user ID.")
         return
-
+    if user_id != 'user1':
+        workouts = get_user_workouts(user_id)
+    else:
+        workouts = workouts_list
+ 
     # Button to trigger the workouts display
     if st.button("🐾Show Recent Workouts🐾"):
         try:
             st.subheader(f"{user_id}'s Recent Workouts Overview")
 
             # If there are workouts, display each one in an expander.
-            if workouts_list:
-                for workout in workouts_list:
+            if workouts:
+                for workout in workouts:
                     with st.expander(f"Workout ID: {workout['workout_id']}"):
                         col1, col2 = st.columns(2)
                         with col1:
@@ -239,8 +243,8 @@ def display_recent_workouts(workouts_list):
                             st.write(f"**Distance:** {workout['distance']} km")
                             st.write(f"**Steps Taken:** {workout['steps']}")
                             st.write(f"**Calories Burned:** {workout['calories_burned']} kcal")
-                            st.write(f"**Start Location (Lat, Lng):** {workout['start_lat_lng']}")
-                            st.write(f"**End Location (Lat, Lng):** {workout['end_lat_lng']}")
+                            st.write(f"**Start Location (Lat, Lng):** ({workout['start_lat_lng']['lat']},{workout['start_lat_lng']['lng']})")
+                            st.write(f"**End Location (Lat, Lng):** ({workout['end_lat_lng']['lat']},{workout['end_lat_lng']['lng']})")
                 st.divider()
                 st.markdown("<h3 style='text-align: center; color: green;'>🔥 Push yourself! No one is going to do it for you! 🔥</h3>", unsafe_allow_html=True)
             else:

@@ -7,7 +7,7 @@
 # data returned in the meantime. We will replace this file with other data when
 # testing earlier units.
 #############################################################################
-
+from google.cloud import bigquery
 import random
 
 users = {
@@ -68,31 +68,86 @@ def get_user_sensor_data(user_id, workout_id):
     return sensor_data
 
 
-def get_user_workouts(user_id):
-    """Returns a list of user's workouts.
+# def get_user_workouts(user_id):
+#     """Returns a list of user's workouts.
 
-    This function currently returns random data. You will re-write it in Unit 3.
+#     This function currently returns random data. You will re-write it in Unit 3.
+#     """
+#     workouts = []
+#     for index in range(random.randint(1, 3)):
+#         random_lat_lng_1 = (
+#             1 + random.randint(0, 100) / 100,
+#             4 + random.randint(0, 100) / 100,
+#         )
+#         random_lat_lng_2 = (
+#             1 + random.randint(0, 100) / 100,
+#             4 + random.randint(0, 100) / 100,
+#         )
+#         workouts.append({
+#             'workout_id': f'workout{index+1}',
+#             'start_timestamp': '2024-01-01 00:00:00',
+#             'end_timestamp': '2024-01-01 00:30:00',
+#             'start_lat_lng': random_lat_lng_1,
+#             'end_lat_lng': random_lat_lng_2,
+#             'distance': random.randint(0, 200) / 10.0,
+#             'steps': random.randint(0, 20000),
+#             'calories_burned': random.randint(0, 100),
+#         })
+#     return workouts
+
+def get_user_workouts(user_id):
+    """Returns a list of user's workouts from BigQuery."""
+    client = bigquery.Client()
+
+    query = f"""
+        SELECT
+            WorkoutId AS workout_id,
+            StartTimestamp AS start_timestamp,
+            EndTimestamp AS end_timestamp,
+            StartLocationLat AS start_lat,
+            StartLocationLong AS start_lng,
+            EndLocationLat AS end_lat,
+            EndLocationLong AS end_lng,
+            TotalDistance AS distance,
+            TotalSteps AS steps,
+            CaloriesBurned AS calories_burned
+        FROM
+            `brianrivera26techx25.ISE.Workouts`  
+        WHERE
+            UserId = @user_id
     """
+
+    # Running the query with the user_id as a parameter
+    query_job = client.query(query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    # Wait for the query to complete and get the results
+    results = query_job.result()
+
+    # Process the results into a list of workout dictionaries
     workouts = []
-    for index in range(random.randint(1, 3)):
-        random_lat_lng_1 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        random_lat_lng_2 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        workouts.append({
-            'workout_id': f'workout{index+1}',
-            'start_timestamp': '2024-01-01 00:00:00',
-            'end_timestamp': '2024-01-01 00:30:00',
-            'start_lat_lng': random_lat_lng_1,
-            'end_lat_lng': random_lat_lng_2,
-            'distance': random.randint(0, 200) / 10.0,
-            'steps': random.randint(0, 20000),
-            'calories_burned': random.randint(0, 100),
-        })
+    for row in results:
+        workout = {
+            'workout_id': row.workout_id,
+            'start_timestamp': row.start_timestamp,
+            'end_timestamp': row.end_timestamp,
+            'start_lat_lng': {
+                'lat': row.start_lat,  
+                'lng': row.start_lng   
+            },
+            'end_lat_lng': {
+                'lat': row.end_lat,   
+                'lng': row.end_lng    
+            },
+            'distance': row.distance,
+            'steps': row.steps,
+            'calories_burned': row.calories_burned
+        }
+        workouts.append(workout)
+    
     return workouts
 
 
