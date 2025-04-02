@@ -30,6 +30,9 @@ Run the following command to run the app locally. Note that if you make changes,
 need to refresh the server and the new changes should appear (you do not need to rerun
 the following command while you are actively making changes).
 
+gcloud config set project brianrivera26techx25
+gcloud config set account 732301616375-compute@developer.gserviceaccount.com
+
 ```shell
 streamlit run app.py
 ```

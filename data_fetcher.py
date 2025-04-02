@@ -7,9 +7,9 @@
 # data returned in the meantime. We will replace this file with other data when
 # testing earlier units.
 #############################################################################
-
-import random
 from google.cloud import bigquery
+import random
+import streamlit as st
 
 users = {
     'user1': {
@@ -63,31 +63,43 @@ def get_user_sensor_data(user_id, workout_id):
     Each item in the list will be a sensor. Sensor will be a dictionary with the above keys and values
 
     gcloud config set project brianrivera26techx25
-    gcloud config set bigquery/region us-central1
+    gcloud config set account 732301616375-compute@developer.gserviceaccount.com
     """
     
 
-    client = bigquery.Client()
-    sensor_data_table = "brianrivera26techx25.ISE.SensorData" 
+    client = bigquery.Client(project="brianrivera26techx25")
+    sensor_data_table = "brianrivera26techx25.ISE.SensorData"
     sensor_type_table = "brianrivera26techx25.ISE.SensorTypes"
 
-    new_table = client.query(
-        f"""SELECT *
-        FROM {sensor_data_table}
-        WHERE WorkoutID = '{workout_id}'"""
-    ).result()
+    query = f"""
+        SELECT *
+        FROM `{sensor_data_table}`
+        WHERE WorkoutID = @workout_id
+        """
+    
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("workout_id", "STRING", workout_id)
+        ]
+    )
+
+    query_job = client.query(query, job_config=job_config)
+    results = query_job.result()
 
     sensor_data = []
     sensors = []
-    sensor_type = []
+    #sensor_type = []
     timestamp = []
     data = []
-    unit = []
+    #unit = []
 
-    for row in new_table:
+    for row in results:
         sensors.append(row.SensorId)
         timestamp.append(row.Timestamp)
         data.append(row.SensorValue)
+
+    sensor_type = [None] * len(sensors)
+    unit = [None] * len(sensors)
 
     another_table = client.query(
         f"""
@@ -97,16 +109,15 @@ def get_user_sensor_data(user_id, workout_id):
     ).result()
 
     for row in another_table:
-        for sen in sensors:
-            if row.SensorID == sen:
-                sensor_type.append(row.Name)
-                unit.append(row.Units)
+        index = sensors.index(row.SensorId)
+        sensor_type[index] = row.Name
+        unit[index] = row.Units
 
     for i in range(len(sensors)):
         sensor_data.append(
             {'sensor_type': sensor_type[i], 'timestamp': timestamp[i], 'data': data[i], 'units': unit[i]}
         )
-    print(sensor_data)
+        
     return sensor_data
 
     
@@ -133,31 +144,86 @@ def get_user_sensor_data(user_id, workout_id):
     # return sensor_data
 
 
-def get_user_workouts(user_id):
-    """Returns a list of user's workouts.
+# def get_user_workouts(user_id):
+#     """Returns a list of user's workouts.
 
-    This function currently returns random data. You will re-write it in Unit 3.
+#     This function currently returns random data. You will re-write it in Unit 3.
+#     """
+#     workouts = []
+#     for index in range(random.randint(1, 3)):
+#         random_lat_lng_1 = (
+#             1 + random.randint(0, 100) / 100,
+#             4 + random.randint(0, 100) / 100,
+#         )
+#         random_lat_lng_2 = (
+#             1 + random.randint(0, 100) / 100,
+#             4 + random.randint(0, 100) / 100,
+#         )
+#         workouts.append({
+#             'workout_id': f'workout{index+1}',
+#             'start_timestamp': '2024-01-01 00:00:00',
+#             'end_timestamp': '2024-01-01 00:30:00',
+#             'start_lat_lng': random_lat_lng_1,
+#             'end_lat_lng': random_lat_lng_2,
+#             'distance': random.randint(0, 200) / 10.0,
+#             'steps': random.randint(0, 20000),
+#             'calories_burned': random.randint(0, 100),
+#         })
+#     return workouts
+
+def get_user_workouts(user_id):
+    """Returns a list of user's workouts from BigQuery."""
+    client = bigquery.Client(project="brianrivera26techx25")
+
+    query = f"""
+        SELECT
+            WorkoutId AS workout_id,
+            StartTimestamp AS start_timestamp,
+            EndTimestamp AS end_timestamp,
+            StartLocationLat AS start_lat,
+            StartLocationLong AS start_lng,
+            EndLocationLat AS end_lat,
+            EndLocationLong AS end_lng,
+            TotalDistance AS distance,
+            TotalSteps AS steps,
+            CaloriesBurned AS calories_burned
+        FROM
+            `brianrivera26techx25.ISE.Workouts`  
+        WHERE
+            UserId = @user_id
     """
+
+    # Running the query with the user_id as a parameter
+    query_job = client.query(query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    # Wait for the query to complete and get the results
+    results = query_job.result()
+
+    # Process the results into a list of workout dictionaries
     workouts = []
-    for index in range(random.randint(1, 3)):
-        random_lat_lng_1 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        random_lat_lng_2 = (
-            1 + random.randint(0, 100) / 100,
-            4 + random.randint(0, 100) / 100,
-        )
-        workouts.append({
-            'workout_id': f'workout{index+1}',
-            'start_timestamp': '2024-01-01 00:00:00',
-            'end_timestamp': '2024-01-01 00:30:00',
-            'start_lat_lng': random_lat_lng_1,
-            'end_lat_lng': random_lat_lng_2,
-            'distance': random.randint(0, 200) / 10.0,
-            'steps': random.randint(0, 20000),
-            'calories_burned': random.randint(0, 100),
-        })
+    for row in results:
+        workout = {
+            'workout_id': row.workout_id,
+            'start_timestamp': row.start_timestamp,
+            'end_timestamp': row.end_timestamp,
+            'start_lat_lng': {
+                'lat': row.start_lat,  
+                'lng': row.start_lng   
+            },
+            'end_lat_lng': {
+                'lat': row.end_lat,   
+                'lng': row.end_lng    
+            },
+            'distance': row.distance,
+            'steps': row.steps,
+            'calories_burned': row.calories_burned
+        }
+        workouts.append(workout)
+    
     return workouts
 
 
@@ -212,5 +278,4 @@ def get_genai_advice(user_id):
         'content': advice,
         'image': image,
     }
-
-get_user_sensor_data("user1", "workout1")
+#get_user_sensor_data("user1", "workout1")

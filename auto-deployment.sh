@@ -10,6 +10,7 @@ PROJECT_NUMBER=732301616375
 GITHUB_REPO_NAME=CatLovers_A5
 
 gcloud config set project brianrivera26techx25
+gcloud config set account 732301616375-compute@developer.gserviceaccount.com
 
 # run this command exactly
 gcloud iam workload-identity-pools create "github" \
