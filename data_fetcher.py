@@ -278,4 +278,3 @@ def get_genai_advice(user_id):
         'content': advice,
         'image': image,
     }
-#get_user_sensor_data("user1", "workout1")
