@@ -64,10 +64,12 @@ def get_user_sensor_data(user_id, workout_id):
 
     gcloud config set project brianrivera26techx25
     gcloud config set account 732301616375-compute@developer.gserviceaccount.com
+    pip install -r requirements2.txt
+    gcloud auth application-default login
     """
     
 
-    client = bigquery.Client(project="brianrivera26techx25")
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
     sensor_data_table = "brianrivera26techx25.ISE.SensorData"
     sensor_type_table = "brianrivera26techx25.ISE.SensorTypes"
 
@@ -173,7 +175,7 @@ def get_user_sensor_data(user_id, workout_id):
 
 def get_user_workouts(user_id):
     """Returns a list of user's workouts from BigQuery."""
-    client = bigquery.Client(project="brianrivera26techx25")
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
 
     query = f"""
         SELECT

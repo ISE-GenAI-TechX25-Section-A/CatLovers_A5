@@ -104,7 +104,7 @@ def display_activity_summary(workouts_list):
     steps = []
     begin = []
     end = []
-    workouts_list = get_user_sensor_data("user1", "workout1")
+    #workouts_list = get_user_sensor_data("user1", "workout1")
     #st.write(workouts_list)
     #get the data from each workout in the list
     for workout in workouts_list:
@@ -137,11 +137,15 @@ def display_activity_summary(workouts_list):
 
     #splits the timestamp data into date and time and uses the hour to determine the time of day and the date to determine day of the week
     for timestamp in begin:
-        date, time = timestamp.split(' ')
-        hour, minute, second = time.split(':')
-        year, month, day = date.split("-")
+        date = timestamp.date()
+        time = timestamp.time()
+        hour = timestamp.hour
+        minute = timestamp.minute
+        second = timestamp.second
+        year = timestamp.year
+        month = timestamp.month
+        day = timestamp.day
         
-        hour = int(hour)
         if hour < 12:
             time_of_day["Morning"] += 1
         elif hour > 17:
@@ -149,15 +153,15 @@ def display_activity_summary(workouts_list):
         else:
             time_of_day["Afternoon"] += 1
         
-        weekday = calendar.weekday(int(year), int(month), int(day))
+        weekday = calendar.weekday(year, month, day)
         days_of_week[day_names[weekday]] += 1 #Line written by ChatGPT
 
     
     #workout length calculation written by ChatGPT
     lengths = []
     for i in range(len(begin)):
-        start_time = datetime.strptime(begin[i], "%Y-%m-%d %H:%M:%S")
-        end_time = datetime.strptime(end[i], "%Y-%m-%d %H:%M:%S")
+        start_time = begin[i]
+        end_time = end[i]
         
         lengths.append((end_time - start_time).total_seconds())
     
