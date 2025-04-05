@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import streamlit as st
 from modules import display_activity_summary
 
-
+"""Run tests: pytest"""
 
 class TestDisplayActivitySummary(unittest.TestCase):
     """Tests the display_activity_summary function.

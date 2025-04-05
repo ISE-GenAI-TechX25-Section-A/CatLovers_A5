@@ -62,10 +62,6 @@ def get_user_sensor_data(user_id, workout_id):
 
     Each item in the list will be a sensor. Sensor will be a dictionary with the above keys and values
 
-    gcloud config set project brianrivera26techx25
-    gcloud config set account 732301616375-compute@developer.gserviceaccount.com
-    pip install -r requirements2.txt
-    gcloud auth application-default login
     """
     
 
@@ -90,10 +86,8 @@ def get_user_sensor_data(user_id, workout_id):
 
     sensor_data = []
     sensors = []
-    #sensor_type = []
     timestamp = []
     data = []
-    #unit = []
 
     for row in results:
         sensors.append(row.SensorId)
