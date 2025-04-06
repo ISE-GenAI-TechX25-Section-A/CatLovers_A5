@@ -31,7 +31,7 @@ def display_app_page():
         # Header Section
         user_profile = get_user_profile(userId)
         st.image(Logo_path, width=100)  
-        st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
+        st.title(f"Welcome, {user_profile.get('full_name', 'Athlete')}! 💪🐾") #Fixed to full name because user_profile returns a dictionary with the key 'full_name'
         st.subheader("Get fit, stay pawsome! 🐱🔥")
         #display_app_page
         value = st.text_input('Enter your name')
