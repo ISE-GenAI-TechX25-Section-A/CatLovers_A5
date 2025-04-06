@@ -223,14 +223,64 @@ def get_user_workouts(user_id):
     return workouts
 
 
-def get_user_profile(user_id):
-    """Returns information about the given user.
+# def get_user_profile(user_id):
+#     """Returns information about the given user.
 
-    This function currently returns random data. You will re-write it in Unit 3.
+#     This function currently returns random data. You will re-write it in Unit 3.
+#     """
+#     if user_id not in users:
+#         raise ValueError(f'User {user_id} not found.')
+#     return users[user_id]
+
+def get_user_profile(user_id):
+    """Returns user profile info and friends list from BigQuery."""
+    client = bigquery.Client()
+
+    # Query for user info
+    user_query = f"""
+        SELECT UserId, Name, Username, ImageUrl, DateOfBirth
+        FROM `brianrivera26techx25.ISE.Users`
+        WHERE UserId = @user_id
     """
-    if user_id not in users:
-        raise ValueError(f'User {user_id} not found.')
-    return users[user_id]
+    user_job = client.query(user_query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    user_result = list(user_job.result())
+    if not user_result:
+        raise ValueError(f"'{user_id}' was not found.")
+
+    user_row = user_result[0]
+
+    # Query for friends
+    friends_query = f"""
+        SELECT UserId1, UserId2
+        FROM `brianrivera26techx25.ISE.Friends`
+        WHERE UserId1 = @user_id OR UserId2 = @user_id
+    """
+    friends_job = client.query(friends_query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    friends = set()
+    for row in friends_job:
+        if row.UserId1 == user_id:
+            friends.add(row.UserId2)
+        else:
+            friends.add(row.UserId1)
+
+    # Return user profile dictionary
+    return {
+        'full_name': user_row.Name,
+        'username': user_row.Username,
+        'date_of_birth': str(user_row.DateOfBirth),
+        'profile_image': user_row.ImageUrl,
+        'friends': list(friends)
+    }
 
 def get_user_posts(user_id):
     """Returns a list of a user's posts.
