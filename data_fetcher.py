@@ -13,7 +13,6 @@ from google.cloud import bigquery
 from dotenv import load_dotenv
 import vertexai
 from vertexai.generative_models import GenerativeModel
-
 load_dotenv()
 
 vertexai.init(project=os.getenv("PROJECT_ID"), location="us-central1")
