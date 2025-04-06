@@ -9,10 +9,11 @@ import streamlit as st
 import os
 from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
+from community_page import display_community_page
 
-# from data_fetcher import (
-#     get_user_posts, get_genai_advice, get_user_profile, get_user_workouts
-# )
+from data_fetcher import (
+    get_user_posts, get_genai_advice, get_user_profile, get_user_workouts
+)
 
 userId = 'user1'
 Logo_path = os.path.join("Images", "Muscle Meow.png")
@@ -23,7 +24,7 @@ def display_app_page():
 
     # Sidebar Navigation
     st.sidebar.title("🏋️ Muscle Meow Navigation")
-    page = st.sidebar.radio("Go to:", ["🏠 Home", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts"])
+    page = st.sidebar.radio("Go to:", ["🏠 Home", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page"])
 
     # Page Routing
     if page == "🏠 Home":
@@ -44,6 +45,9 @@ def display_app_page():
     elif page == "📝 Posts":
         post_info = get_user_posts(userId)
         display_post(post_info)
+    elif page == "👥 Community Page":
+        display_community_page(userId)
+        
 
 def display_ai_advice(userId):
     """Displays the AI advice page."""

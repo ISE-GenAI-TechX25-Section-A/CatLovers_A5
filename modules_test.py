@@ -57,8 +57,8 @@ class TestDisplayActivitySummary(unittest.TestCase):
         self.workouts_list = [
             {
                 'workout_id': 1,
-                'start_timestamp': '2025-03-01 08:30:00',
-                'end_timestamp': '2025-03-01 09:30:00',
+                'start_timestamp': datetime.fromisoformat("2024-07-29T07:00:00"),
+                'end_timestamp': datetime.fromisoformat("2024-07-29T08:00:00"),
                 'start_lat_lng': (37.7749, -122.4194),
                 'end_lat_lng': (37.7749, -122.4194),
                 'distance': 5.0,  # in km
@@ -67,8 +67,8 @@ class TestDisplayActivitySummary(unittest.TestCase):
             },
             {
                 'workout_id': 2,
-                'start_timestamp': '2025-03-02 15:00:00',
-                'end_timestamp': '2025-03-02 16:00:00',
+                'start_timestamp': datetime.fromisoformat("2024-07-29T18:00:00"),
+                'end_timestamp': datetime.fromisoformat("2024-07-29T19:00:00"),
                 'start_lat_lng': (37.7749, -122.4194),
                 'end_lat_lng': (37.7749, -122.4194),
                 'distance': 4.5,  # in km
@@ -107,7 +107,7 @@ class TestDisplayActivitySummary(unittest.TestCase):
         mock_metric.assert_any_call("Average Distance Travelled", 4.75)
         mock_metric.assert_any_call("Average Steps Taken", 4750)
         mock_metric.assert_any_call("Favorite Time of Day", "Morning")
-        mock_metric.assert_any_call("Favorite Day of Week", "Saturday")
+        mock_metric.assert_any_call("Favorite Day of Week", "Monday")
         mock_metric.assert_any_call('Average Length of Workouts', '01:00:00')
         mock_metric_call_count = 6
         # Inspect call arguments to verify formatting
@@ -119,7 +119,7 @@ class TestDisplayActivitySummary(unittest.TestCase):
         # checking for correct variables while ignoring whitespace discrepancies
         expected_content = [
             "<b>Morning</b>",
-            "<b>Saturday</b>",
+            "<b>Monday</b>",
             "<b>290</b>",
             "<b>01:00:00</b>"
         ]
@@ -131,13 +131,13 @@ class TestDisplayActivitySummary(unittest.TestCase):
         assert any(all(part in text for part in expected_content) for text in called_texts), "Expected markdown call not found"
 
         # setting up variables to match mock workout_tests
-        monday = 0
+        monday = 2
         tuesday = 0
         wednesday = 0
         thursday = 0
         friday = 0
-        saturday = 1
-        sunday = 1
+        saturday = 0
+        sunday = 0
         days_of_week = {"Monday":monday, "Tuesday":tuesday, "Wednesday":wednesday, "Thursday":thursday, "Friday":friday, "Saturday":saturday, "Sunday":sunday}
         
 

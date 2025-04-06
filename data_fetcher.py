@@ -9,6 +9,7 @@
 #############################################################################
 from google.cloud import bigquery
 import random
+import streamlit as st
 
 users = {
     'user1': {
@@ -43,29 +44,100 @@ users = {
 
 #used for individual workouts in "recent workouts"
 def get_user_sensor_data(user_id, workout_id):
-    """Returns a list of timestampped information for a given workout.
-
-    This function currently returns random data. You will re-write it in Unit 3.
     """
+    Returns a list of timestamped information for a given workout. 
+    Input: user_id, workout_id
+    Output: A list of sensor data from the workout. Each item in the list is a dictionary with keys sensor_type, timestamp, data, units
+
+    """
+
+    """
+    Use the workout_id to get which sensor it is and the sensor value and the timestamp. There will be multiple sensors for each workout. 
+    Use the sensor_id to get the sensor type and units
+    
+    sensor_type = sensor type
+    timestamp = timestamp
+    data = sensor value
+    units = units
+
+    Each item in the list will be a sensor. Sensor will be a dictionary with the above keys and values
+
+    """
+    
+
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
+    sensor_data_table = "brianrivera26techx25.ISE.SensorData"
+    sensor_type_table = "brianrivera26techx25.ISE.SensorTypes"
+
+    query = f"""
+        SELECT *
+        FROM `{sensor_data_table}`
+        WHERE WorkoutID = @workout_id
+        """
+    
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("workout_id", "STRING", workout_id)
+        ]
+    )
+
+    query_job = client.query(query, job_config=job_config)
+    results = query_job.result()
+
     sensor_data = []
-    sensor_types = [
-        'accelerometer',
-        'gyroscope',
-        'pressure',
-        'temperature',
-        'heart_rate',
-    ]
-    for index in range(random.randint(5, 100)):
-        random_minute = str(random.randint(0, 59))
-        if len(random_minute) == 1:
-            random_minute = '0' + random_minute
-        timestamp = '2024-01-01 00:' + random_minute + ':00'
-        data = random.random() * 100
-        sensor_type = random.choice(sensor_types)
+    sensors = []
+    timestamp = []
+    data = []
+
+    for row in results:
+        sensors.append(row.SensorId)
+        timestamp.append(row.Timestamp)
+        data.append(row.SensorValue)
+
+    sensor_type = [None] * len(sensors)
+    unit = [None] * len(sensors)
+
+    another_table = client.query(
+        f"""
+        SELECT *
+        FROM {sensor_type_table}
+        """
+    ).result()
+
+    for row in another_table:
+        index = sensors.index(row.SensorId)
+        sensor_type[index] = row.Name
+        unit[index] = row.Units
+
+    for i in range(len(sensors)):
         sensor_data.append(
-            {'sensor_type': sensor_type, 'timestamp': timestamp, 'data': data}
+            {'sensor_type': sensor_type[i], 'timestamp': timestamp[i], 'data': data[i], 'units': unit[i]}
         )
+        
     return sensor_data
+
+    
+
+    # sensor_data = []
+    # sensor_types = [
+    #     'accelerometer',
+    #     'gyroscope',
+    #     'pressure',
+    #     'temperature',
+    #     'heart_rate',
+    # ]
+    # for index in range(random.randint(5, 100)):
+    #     random_minute = str(random.randint(0, 59))
+    #     if len(random_minute) == 1:
+    #         random_minute = '0' + random_minute
+    #     timestamp = '2024-01-01 00:' + random_minute + ':00'
+    #     data = random.random() * 100
+    #     sensor_type = random.choice(sensor_types)
+    #     sensor_data.append(
+    #         {'sensor_type': sensor_type, 'timestamp': timestamp, 'data': data}
+    #     )
+    # print(sensor_data)
+    # return sensor_data
 
 
 # def get_user_workouts(user_id):
@@ -97,7 +169,7 @@ def get_user_sensor_data(user_id, workout_id):
 
 def get_user_workouts(user_id):
     """Returns a list of user's workouts from BigQuery."""
-    client = bigquery.Client()
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
 
     query = f"""
         SELECT
