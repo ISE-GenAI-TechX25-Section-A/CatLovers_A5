@@ -15,7 +15,7 @@ from streamlit_elements import elements, mui, html
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-
+from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 
 
 
@@ -99,17 +99,24 @@ def display_activity_summary(workouts_list):
         Nothing
     
     """
+    distances = []
+    calories = []
+    steps = []
+    begin = []
+    end = []
+    #workouts_list = get_user_sensor_data("user1", "workout1")
+    #st.write(workouts_list)
     #get the data from each workout in the list
     for workout in workouts_list:
-        distances = [workout['distance']]
-        calories = [workout['calories_burned']]
-        steps = [workout['steps']]
-        begin = [workout['start_timestamp']]
-        end = [workout['end_timestamp']]
+        distances.append(workout['distance'])
+        calories.append(workout['calories_burned'])
+        steps.append(workout['steps'])
+        begin.append(workout['start_timestamp'])
+        end.append(workout['end_timestamp'])
     
-    avg_distances = statistics.mean(distances)
-    avg_calories = statistics.mean(calories)
-    avg_steps = statistics.mean(steps)
+    avg_distances = round(statistics.mean(distances), 2)
+    avg_calories = round(statistics.mean(calories), 2)
+    avg_steps = round(statistics.mean(steps), 2)
 
     morning = 0
     afternoon = 0
@@ -130,11 +137,15 @@ def display_activity_summary(workouts_list):
 
     #splits the timestamp data into date and time and uses the hour to determine the time of day and the date to determine day of the week
     for timestamp in begin:
-        date, time = timestamp.split(' ')
-        hour, minute, second = time.split(':')
-        year, month, day = date.split("-")
+        date = timestamp.date()
+        time = timestamp.time()
+        hour = timestamp.hour
+        minute = timestamp.minute
+        second = timestamp.second
+        year = timestamp.year
+        month = timestamp.month
+        day = timestamp.day
         
-        hour = int(hour)
         if hour < 12:
             time_of_day["Morning"] += 1
         elif hour > 17:
@@ -142,15 +153,15 @@ def display_activity_summary(workouts_list):
         else:
             time_of_day["Afternoon"] += 1
         
-        weekday = calendar.weekday(int(year), int(month), int(day))
+        weekday = calendar.weekday(year, month, day)
         days_of_week[day_names[weekday]] += 1 #Line written by ChatGPT
 
     
     #workout length calculation written by ChatGPT
     lengths = []
     for i in range(len(begin)):
-        start_time = datetime.strptime(begin[i], "%Y-%m-%d %H:%M:%S")
-        end_time = datetime.strptime(end[i], "%Y-%m-%d %H:%M:%S")
+        start_time = begin[i]
+        end_time = end[i]
         
         lengths.append((end_time - start_time).total_seconds())
     
@@ -208,38 +219,44 @@ def display_activity_summary(workouts_list):
 
 
 def display_recent_workouts(workouts_list):
-    """
-    Displays a list of recent workouts for a user in Streamlit.
-
-    Parameters
-    ----------
-    workouts_list : list of dict
-        Each dict should contain workout details such as:
-        - 'workout_id'
-        - 'start_timestamp'
-        - 'end_timestamp'
-        - 'distance'
-        - 'steps'
-        - 'calories_burned'
-        - 'start_lat_lng'
-        - 'end_lat_lng' 
-    """
-    # If no workouts, show an info message
-    if not workouts_list:
-        st.info("No recent workouts found.")
+    # Page header
+    st.markdown("<h1 style='text-align: center; color: orange;'>🐱💪 Muscle Meow: Recent Workouts 🏋️‍♂️</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: gray;'>Train like a beast, rest like a cat. 😼</h3>", unsafe_allow_html=True)
+    
+    # Get user input for user ID
+    user_id = st.text_input("🔍 Enter user ID", "user1")
+    if not user_id:
+        st.warning("⚠️ Please enter a valid user ID.")
         return
-    # Display each workout in an expander
-    for workout in workouts_list:
-        with st.expander(f"Workout ID: {workout['workout_id']}"):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f"**Start Time:** {workout['start_timestamp']}")
-                st.write(f"**End Time:** {workout['end_timestamp']}")
-                st.write(f"**Distance:** {workout['distance']} km")
-                st.write(f"**Steps Taken:** {workout['steps']}")
-                st.write(f"**Calories Burned:** {workout['calories_burned']} kcal")
-                st.write(f"**Start Location (Lat, Lng):** {workout['start_lat_lng']}")
-                st.write(f"**End Location (Lat, Lng):** {workout['end_lat_lng']}")
+    if user_id != 'user1':
+        workouts = get_user_workouts(user_id)
+    else:
+        workouts = workouts_list
+ 
+    # Button to trigger the workouts display
+    if st.button("🐾Show Recent Workouts🐾"):
+        try:
+            st.subheader(f"{user_id}'s Recent Workouts Overview")
+
+            # If there are workouts, display each one in an expander.
+            if workouts:
+                for workout in workouts:
+                    with st.expander(f"Workout ID: {workout['workout_id']}"):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.write(f"**Start Time:** {workout['start_timestamp']}")
+                            st.write(f"**End Time:** {workout['end_timestamp']}")
+                            st.write(f"**Distance:** {workout['distance']} km")
+                            st.write(f"**Steps Taken:** {workout['steps']}")
+                            st.write(f"**Calories Burned:** {workout['calories_burned']} kcal")
+                            st.write(f"**Start Location (Lat, Lng):** ({workout['start_lat_lng']['lat']},{workout['start_lat_lng']['lng']})")
+                            st.write(f"**End Location (Lat, Lng):** ({workout['end_lat_lng']['lat']},{workout['end_lat_lng']['lng']})")
+                st.divider()
+                st.markdown("<h3 style='text-align: center; color: green;'>🔥 Push yourself! No one is going to do it for you! 🔥</h3>", unsafe_allow_html=True)
+            else:
+                st.info("No recent workouts found.")
+        except ValueError:
+            st.error(f"User '{user_id}' not found. Please try again.")
 
 
 def display_genai_advice(timestamp, content, image=None):
@@ -250,3 +267,51 @@ def display_genai_advice(timestamp, content, image=None):
 
     if image:
         st.image(image, caption="Stay motivated!", use_container_width=True)
+
+def display_user_profile(user_profile):
+    # Page header
+    st.markdown("<h1 style='text-align: center; color: orange;'>😺💼 Muscle Meow: User Profile 📋</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: gray;'>Every legend starts with a profile. 🔍</h3>", unsafe_allow_html=True)
+
+    # Input box to type a User ID
+    user_id = st.text_input("🆔 Enter user ID", "user1")
+    if not user_id:
+        st.warning("⚠️ Please enter a valid user ID.")
+        return
+
+    if st.button("📂 Show User Profile"):
+        try:
+            # Retrieve user profile
+            if user_id != 'user1':
+                user = get_user_profile(user_id)
+            else:
+                user = user_profile
+
+            # Display user information
+            if user_id == 'user1' or user_id == 'user2' or user_id == 'user3':
+                st.subheader(f"👤 Profile: {user['full_name']} (@{user['username']})")
+                
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.write(user['profile_image'])
+                    st.image(user['profile_image'], caption="Profile Picture", width=250)
+                with col2:
+                    st.write(f"**Full Name:** {user['full_name']}")
+                    st.write(f"**Username:** {user['username']}")
+                    st.write(f"**Date of Birth:** {user['date_of_birth']}")
+                    st.write(f"**User ID:** {user_id}")
+                    st.write(f"**Number of Friends:** {len(user['friends'])}")
+
+                # Display friends list
+                if user['friends']:
+                    st.markdown("---")
+                    st.markdown("### 🧑‍🤝‍🧑 Friends")
+                    for friend_id in user['friends']:
+                        st.write(f"• {friend_id}")
+                else:
+                    st.info("This user has no friends 😿")
+            else:
+                st.info("No user profile found.")
+
+        except ValueError:
+            st.error(f"'{user_id}' was not found.")
