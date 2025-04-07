@@ -294,7 +294,7 @@ def display_user_profile(user_profile):
                 
                 col1, col2 = st.columns([1, 2])
                 with col1:
-                    st.write(user['profile_image'])
+                    # st.write(user['profile_image'])
                     st.image(user['profile_image'], caption="Profile Picture", width=250)
                 with col2:
                     st.write(f"**Full Name:** {user['full_name']}")
