@@ -48,13 +48,12 @@ def display_post(post_info, key=0):
     Returns:
         None
     """
-    profile_image = get_user_profile(post_info['user_id'])['profile_image']
 
 
     with st.container():
         col1, col2 = st.columns([1, 5]) 
         with col1:
-            st.image(profile_image, width=40) 
+            st.image(post_info['profile_image'], width=40) 
         with col2:
             st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  
             st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 

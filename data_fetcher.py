@@ -307,16 +307,21 @@ def get_user_posts(user_id):
     client = bigquery.Client(project="brianrivera26techx25",location="US")
 
     query = f"""
-        SELECT
-            PostId AS post_id,
-            AuthorId AS user_id,
-            Timestamp AS timestamp,
-            Content AS content,
-            ImageUrl AS image
-        FROM
-            `brianrivera26techx25.ISE.Posts`  
-        WHERE
-            AuthorId = @user_id
+SELECT
+    p.PostId AS post_id,
+    p.AuthorId AS user_id,
+    p.Timestamp AS timestamp,
+    p.Content AS content,
+    p.ImageUrl AS image,
+    u.ImageUrl AS profile_image
+FROM
+    `brianrivera26techx25.ISE.Posts` p
+JOIN
+    `brianrivera26techx25.ISE.Users` u
+ON
+    p.AuthorId = u.UserId
+WHERE
+    p.AuthorId = @user_id
     """
 
     # Running the query with the user_id as a parameter
@@ -337,6 +342,7 @@ def get_user_posts(user_id):
             'timestamp': row.timestamp,
             'content': row.content,
             'image': row.image,
+            'profile_image': row.profile_image
         }
         posts.append(row_post)
     return posts
