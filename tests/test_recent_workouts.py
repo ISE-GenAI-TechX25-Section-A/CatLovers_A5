@@ -1,3 +1,8 @@
+import unittest
+from unittest.mock import patch, MagicMock
+import streamlit as st
+from modules import display_recent_workouts
+
 class TestDisplayRecentWorkouts(unittest.TestCase):
 
     def setUp(self):
