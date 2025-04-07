@@ -38,7 +38,7 @@ def display_my_custom_component(value):
     html_file_name = "my_custom_component"
     create_component(data, html_file_name)
 
-def display_post(post_info):
+def display_post(post_info, key=0):
     """Displays a user post in an Instagram-like style within the Streamlit app.
 
     Args:
@@ -48,17 +48,17 @@ def display_post(post_info):
     Returns:
         None
     """
-    
+
     with st.container():
         col1, col2 = st.columns([1, 5]) 
         with col1:
-            st.image(post_info['user_image'], width=40) 
+            st.image(post_info['image'], width=40) 
         with col2:
             st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  
             st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 
 
-        if post_info.get('post_image'):
-            st.image(post_info['post_image'], width=350) 
+        if post_info.get('image'):
+            st.image(post_info['image'], width=350)
 
         st.markdown(f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>", unsafe_allow_html=True)
 
@@ -67,11 +67,11 @@ def display_post(post_info):
         # Like and Comment buttons
         col1, col2 = st.columns([1, 1]) 
         with col1:
-            like_button = st.button("Like", key=f"like_{post_info['post_id']}")
+            like_button = st.button("Like", key=f"like_{post_info['post_id']}_{key}")
             if like_button:
                 st.write("You liked this post!")
         with col2:
-            comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}")
+            comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}_{key}")
             if comment_button:
                 st.write("Comment functionality is under development.")  # Placeholder for comment functionality
 

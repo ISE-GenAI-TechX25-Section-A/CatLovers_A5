@@ -234,7 +234,8 @@ def get_user_workouts(user_id):
 
 def get_user_profile(user_id):
     """Returns user profile info and friends list from BigQuery."""
-    client = bigquery.Client()
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
+
 
     # Query for user info
     user_query = f"""
