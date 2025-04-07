@@ -15,13 +15,30 @@ from data_fetcher import (
     get_user_posts, get_genai_advice, get_user_profile, get_user_workouts
 )
 
-userId = 'user1'
+st.set_page_config(page_title="Muscle Meow", page_icon="🐱💪", layout="wide")
+def login_page():
+    """Displays the login page."""
+    if "user_id" not in st.session_state:
+        st.title("Login to Muscle Meow🐱💪")
+        user_id = st.text_input("🆔 Enter your user ID:")
+
+        if st.button("Login"):
+            if user_id:
+                st.session_state.user_id = user_id  # Store user ID in session state
+                st.success(f"Logged in as {user_id}")
+                st.rerun()
+            else:
+                st.error("Please enter a valid user ID.")
+    else:
+        # Redirect to main content if already logged in
+        display_app_page()
+
+
+
 Logo_path = os.path.join("Images", "Muscle Meow.png")
 
 def display_app_page():
-    """Main function to run the app."""
-    st.set_page_config(page_title="Muscle Meow", page_icon="🐱💪", layout="wide")
-
+    userId = st.session_state.user_id
     # Sidebar Navigation
     st.sidebar.title("🏋️ Muscle Meow Navigation")
     page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page","🔥 Activity"])
@@ -31,11 +48,10 @@ def display_app_page():
         # Header Section
         user_profile = get_user_profile(userId)
         st.image(Logo_path, width=100)  
-        st.title(f"Welcome, {user_profile.get('full_name', 'Athlete')}! 💪🐾") #Fixed to full name because user_profile returns a dictionary with the key 'full_name'
+        st.title(f"Welcome, {user_profile.get('full_name', 'Athlete')}! 💪🐾") 
         st.subheader("Get fit, stay pawsome! 🐱🔥")
-        #display_app_page
-        value = st.text_input('Enter your name')
-        display_my_custom_component(value)
+        # value = st.text_input('Enter your name')
+        # display_my_custom_component(value)
     elif page == "🔎 Find User":
         display_user_profile_page(userId)
     elif page == "🤖 AI Advice":
@@ -74,4 +90,4 @@ def display_user_profile_page(userId):
 
 # This is the starting point for your app. You do not need to change these lines
 if __name__ == '__main__':
-    display_app_page()
+    login_page()
