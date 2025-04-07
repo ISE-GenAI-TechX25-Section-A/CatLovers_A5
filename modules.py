@@ -38,7 +38,7 @@ def display_my_custom_component(value):
     html_file_name = "my_custom_component"
     create_component(data, html_file_name)
 
-def display_post(post_info, profile_image, key=0):
+def display_post(post_info, key=0):
     """Displays a user post in an Instagram-like style within the Streamlit app.
 
     Args:
@@ -48,6 +48,8 @@ def display_post(post_info, profile_image, key=0):
     Returns:
         None
     """
+    profile_image = get_user_profile(post_info['user_id'])['profile_image']
+
 
     with st.container():
         col1, col2 = st.columns([1, 5]) 
