@@ -46,8 +46,9 @@ def display_app_page():
         display_recent_workouts_page(userId)
     elif page == "📝 Posts":
         post_info = get_user_posts(userId)
+        profile_image = get_user_profile(userId)['profile_image']
         for i in range(len(post_info)):
-            display_post(post_info[i], i)
+            display_post(post_info[i], profile_image, i)
         
     elif page == "👥 Community Page":
         display_community_page(userId)
