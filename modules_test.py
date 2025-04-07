@@ -26,15 +26,7 @@ class TestDisplayPost(unittest.TestCase):
     @patch('streamlit.button')
     def test_display_post_renders(self, mock_button, mock_markdown, mock_image):
         """Tests if display_post runs without errors and displays the post correctly."""
-        post_info = {
-            'post_id': 'post1',
-            'user_id': 'remi_the_rems',
-            'user_image': 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Puma_shoes.jpg',
-            'timestamp': '2024-01-01 00:00:00',
-            'content': 'Had a great workout today!',
-            'post_image': 'https://i.imgur.com/61ZEkcrb.jpg'
-        }
-
+        post_info = get_mock_info() # would be gotten from the mock database when implemented
         display_post(post_info)
 
         # Check if Streamlit elements were called correctly
