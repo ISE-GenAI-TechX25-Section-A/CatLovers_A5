@@ -1,3 +1,11 @@
+import unittest
+from unittest.mock import patch
+from streamlit.testing.v1 import AppTest
+import statistics
+from datetime import datetime, timedelta
+import streamlit as st
+from modules import display_user_profile
+
 class TestDisplayUserProfile(unittest.TestCase):
 
     @patch("streamlit.warning")  
