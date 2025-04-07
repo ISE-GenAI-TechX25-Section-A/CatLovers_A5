@@ -7,7 +7,7 @@
 
 import streamlit as st
 import os
-from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts, display_user_profile
+from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts, display_user_profile, display_activity_page 
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 from community_page import display_community_page
 
@@ -24,14 +24,14 @@ def display_app_page():
 
     # Sidebar Navigation
     st.sidebar.title("🏋️ Muscle Meow Navigation")
-    page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page"])
+    page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page","🔥 Activity"])
 
     # Page Routing
     if page == "🏠 Home":
         # Header Section
         user_profile = get_user_profile(userId)
         st.image(Logo_path, width=100)  
-        st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
+        st.title(f"Welcome, {user_profile.get('full_name', 'Athlete')}! 💪🐾") #Fixed to full name because user_profile returns a dictionary with the key 'full_name'
         st.subheader("Get fit, stay pawsome! 🐱🔥")
         #display_app_page
         value = st.text_input('Enter your name')
@@ -48,9 +48,10 @@ def display_app_page():
         post_info = get_user_posts(userId)
         for i in range(len(post_info)):
             display_post(post_info[i], i)
-        
     elif page == "👥 Community Page":
         display_community_page(userId)
+    elif page == "🔥 Activity":
+        display_activity_page(userId)
         
 
 def display_ai_advice(userId):

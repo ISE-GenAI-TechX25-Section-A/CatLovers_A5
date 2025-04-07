@@ -317,3 +317,53 @@ def display_user_profile(user_profile):
 
         except ValueError:
             st.error(f"'{user_id}' was not found.")
+            
+def display_activity_page(user_id):
+    """Displays the user's activity page with recent workouts, a summary, and a share button."""
+    st.markdown("## 🔥 Your Activity")
+
+    # Fetch workouts
+    workouts = get_user_workouts(user_id)
+    if not workouts:
+        st.warning("No workouts found.")
+        return
+
+    # Display Recent 3 Workouts
+    st.markdown("### 🏃 Recent Workouts")
+    recent_workouts = sorted(workouts, key=lambda w: w['start_timestamp'], reverse=True)[:3]
+    for workout in recent_workouts:
+        with st.expander(f"Workout: {workout['start_timestamp']}"):
+            st.write(f"Distance: {workout['distance']} km")
+            st.write(f"Steps: {workout['steps']}")
+            st.write(f"Calories Burned: {workout['calories_burned']}")
+
+    # Display Activity Summary
+    st.markdown("---")
+    st.markdown("### 📊 Activity Summary")
+    display_activity_summary(workouts)
+
+    # Share a Stat
+    st.markdown("---")
+    st.markdown("### ✨ Share Your Stats")
+    stat_option = st.selectbox("Pick a stat to share with your friends:", ["Steps", "Calories", "Distance"])
+    stat_map = {
+        "Steps": lambda w: w['steps'],
+        "Calories": lambda w: w['calories_burned'],
+        "Distance": lambda w: w['distance']
+    }
+    selected_workout = recent_workouts[0] if recent_workouts else None
+    if selected_workout and st.button("Share it!"):
+        value = stat_map[stat_option](selected_workout)
+        content = f"Look at this, I logged {value} {stat_option.lower()} today! 💪🐾"
+        st.success("Post shared with the community!")
+
+        # You can replace this with actual BigQuery insertion later
+        post = {
+            'user_id': get_user_profile(user_id)['username'],
+            'post_id': str(uuid.uuid4()),
+            'timestamp': datetime.utcnow().isoformat(),
+            'content': content,
+            'user_image': get_user_profile(user_id)['profile_image'],
+            'post_image': 'https://i.imgur.com/61ZEkcrb.jpg'
+        }
+        display_post(post)
