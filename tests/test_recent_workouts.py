@@ -1,24 +1,19 @@
-import unittest
-from unittest.mock import patch, MagicMock
-import streamlit as st
-from modules import display_recent_workouts
-
 class TestDisplayRecentWorkouts(unittest.TestCase):
 
     def setUp(self):
         """Set up sample workout data for testing."""
         self.workouts = [
             {
-                "workout_id": "W123",
-                "start_timestamp": "2025-03-07 08:00:00",
-                "end_timestamp": "2025-03-07 09:00:00",
-                "distance": 5.0,
-                "steps": 6000,
-                "calories_burned": 450,
-                "start_lat_lng": "18.4655, -66.1057",
-                "end_lat_lng": "18.4665, -66.1067"
-            }
-        ]
+            'workout_id': 'W123',
+            'start_timestamp': '2025-03-07 08:00:00',
+            'end_timestamp': '2025-03-07 09:00:00',
+            'distance': 5.0,
+            'steps': 6000,
+            'calories_burned': 450,
+            'start_lat_lng': {'lat': 18.4665, 'lng': -66.1067},
+            'end_lat_lng': {'lat': 18.4670, 'lng': -66.1070}
+        }
+    ]
 
     @patch("streamlit.markdown")
     @patch("streamlit.text_input", return_value="user1")
@@ -60,6 +55,8 @@ class TestDisplayRecentWorkouts(unittest.TestCase):
         mock_write.assert_any_call("**Distance:** 5.0 km")
         mock_write.assert_any_call("**Steps Taken:** 6000")
         mock_write.assert_any_call("**Calories Burned:** 450 kcal")
+        mock_write.assert_any_call("**Start Location (Lat, Lng):** (18.4665,-66.1067)")
+        mock_write.assert_any_call("**End Location (Lat, Lng):** (18.467,-66.107)")
 
     @patch("streamlit.markdown")
     @patch("streamlit.text_input", return_value="user1")
@@ -71,7 +68,3 @@ class TestDisplayRecentWorkouts(unittest.TestCase):
         display_recent_workouts([])
         mock_subheader.assert_called_with("user1's Recent Workouts Overview")
         mock_info.assert_called_with("No recent workouts found.")
-
-
-if __name__ == "__main__":
-    unittest.main()
