@@ -1,0 +1,40 @@
+﻿Feature 1: Accountability Tracker Page
+Overview: A dashboard that helps users track engagement and personal activity goals.
+-Create custom dialy/weekly/monthly fitness goals:
+e.g. “Use the gym 3x this week,” “Do 4 stairmaster sessions,” or “Do 2 leg day workouts”
+* Log progress after doing pre-loaded workouts (from the Workout Video Page Feature 2)
+e.g. Making slection of muscle groups/ selection of specific workouts
+* Build up streaks, earn fun “buff cat” points
+* Track completion through a clean dashboard with progress bar
+Feature 1 Tasks:
+* implement dashboard and progress bar
+   * An easy to understand interface to show the user all of the information they need to know about their progress. It will display the recently completed workouts, the daily/weekly/monthly goals (and progress bar), the streak counter, the current "buff cat" points, a place to add new goals, and a place to add the workouts completed from the pre-loaded workout selection (Feature 2).
+* Implement streak tracker
+   * Tracks how many days in a row the user has completed at least one workout/goal. Used for motivation. Can have checkpoints (like 7 days, 1 month, etc) that gives the user extra "buff cat" points
+* Implement "buff cat" points
+   * A point system which encourages the user to complete workouts. Each workout is worth a certain amount of points
+* Implement log of pre-loaded workouts
+   * An area where you can select "track app workouts" (or something similar). When you select this, you can choose the workouts you completed from the pre-loaded workouts on Feature 2.
+* Implement goal tracker
+   * Create custom daily/weekly/monthly fitness goals: e.g. “Use the gym 3x this week,” “Do 4 stairmaster sessions,” or “Do 2 leg day workouts”. Goals can be typed in by user, or selected from a list of typical goals. Daily goals can also be workouts from the pre-loaded workouts in Feature 2.
+
+
+Feature 2: Add workout by body part with selection for accountability
+Description:
+ Users should be able to browse workouts organized by body part (e.g., legs, upper body, core). Each body part category will contain a list of related workouts retrieved from the ExerciseDB API. Users should be able to select a workout from the list to log it for their accountability tracking.
+Feature Requirements:
+* A set of predefined body part categories
+* Each category contains a list of workouts relevant to that body part
+* Workouts include basic info such as name, target muscle, and equipment
+* Users can select a workout from the list to log it for accountability tracking
+* Selection should trigger storing the workout in the user's tracked activity
+Feature 2 Tasks:
+* Implement Workout Selection
+   * A dashboard with easily navigable tabs for each muscle group/body part. When a tab is selected, a list of workouts/videos belonging to that category will populate using the ExerciseDB API.
+* Implement workout info
+   * Each workout will have an expandable section beneath it with basic info about the workout such as name, target muscle, and equipment.
+   * e.g. Under the videos will be a "more info" button that when clicked will expand to show basic info.
+* Implement logging workout to Feature 1
+   * When a workout is selected, there will be a button/checkbox to add it to the user's accountability page saying they completed the workout. This should make it count towards any goals added to Feature 2.
+* Implement workout tracking
+   * When a workout is selected and marked done, the workout and the information about that workout (duration, calories, etc) should be added to activity summary and workouts list.
