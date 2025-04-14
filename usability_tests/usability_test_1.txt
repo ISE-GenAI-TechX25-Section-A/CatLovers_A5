@@ -1,0 +1,30 @@
+﻿Notes:
+* 1)
+   * Tried to check the workouts already shown like a checklist. 
+* 2) 
+   * Tried to add a goal under the make daily goals in order to add the workout because they couldn't find the drop-down/button. 
+* 3)
+   * No problems
+* 4)
+   * Tried to click on the weekly goal progress bar
+   * Said there should be the button underneath the weekly goals
+   * It's too small writing
+   * No problems after finding the drop down
+
+
+Feedback:
+* How easy/hard was it to complete the task given? 
+   * Super easy. 8/10
+* What confusions were there? Why were they confused? 
+   * Couldn't find the buttons. Was lost are started clicking randomly because couldn't find the buttons. 
+* What could be improved?
+   * Bigger writing. 
+
+
+Results:
+* Challenges: The main challenges were not being able to find the drop down menus relevant to the task.
+* Hypothesis: This is probably due to a confusing layout (button off to the side instead of near when it’s referring to, not clear which things are clickable) and small, unnoticeable writing. 
+   * Participant stated, “there were a bunch of things that looked like buttons but weren’t and I was lost”
+* Fixes: 
+   * Moving the drop downs to be near what they are related to and increase the size (of the button and the text)
+   * Change the workouts completed and goals sections to look less like a clickable checklist
