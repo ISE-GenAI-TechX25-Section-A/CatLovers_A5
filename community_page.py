@@ -63,3 +63,5 @@ def display_community_page(userId):
         st.image(advice["image"])
     st.write(advice["content"])
 
+if __name__ == "__main__":
+    display_community_page(userId)

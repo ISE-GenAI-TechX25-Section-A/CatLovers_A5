@@ -28,25 +28,30 @@ def display_app_page():
 
     # Page Routing
     if page == "🏠 Home":
-        # Header Section
-        user_profile = get_user_profile(userId)
-        st.image(Logo_path, width=100)  
-        st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
-        st.subheader("Get fit, stay pawsome! 🐱🔥")
-        #display_app_page
-        value = st.text_input('Enter your name')
-        display_my_custom_component(value)
+        st.switch_page("home_page.py")
+        # # Header Section
+        # user_profile = get_user_profile(userId)
+        # st.image(Logo_path, width=100)  
+        # st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
+        # st.subheader("Get fit, stay pawsome! 🐱🔥")
+        # value = st.text_input('Enter your name')
+        # display_my_custom_component(value)
     elif page == "🤖 AI Advice":
-        display_ai_advice(userId)
+        st.switch_page("ai_advice_page.py")
+        #display_ai_advice(userId)
     elif page == "📊 Workout Summary":
-        display_activity_summary(get_user_workouts(userId))
+        st.switch_page("workout_summary_page.py")
+        #display_activity_summary(get_user_workouts(userId))
     elif page == "📅 Recent Workouts":
-        display_recent_workouts_page(userId)
+        st.switch_page("recent_workouts_page.py")
+        #display_recent_workouts_page(userId)
     elif page == "📝 Posts":
-        post_info = get_user_posts(userId)
-        display_post(post_info)
+        st.switch_page("posts_page.py")
+        # post_info = get_user_posts(userId)
+        # display_post(post_info)
     elif page == "👥 Community Page":
-        display_community_page(userId)
+        st.switch_page("community_page.py")
+        #display_community_page(userId)
         
 
 def display_ai_advice(userId):
