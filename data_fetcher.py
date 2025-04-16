@@ -2,15 +2,29 @@
 # data_fetcher.py
 #
 # This file contains functions to fetch data needed for the app.
-#
-# You will re-write these functions in Unit 3, and are welcome to alter the
-# data returned in the meantime. We will replace this file with other data when
-# testing earlier units.
 #############################################################################
 from google.cloud import bigquery
 import random
 import streamlit as st
 
+import os
+import random
+import uuid
+from datetime import datetime
+from dotenv import load_dotenv
+import vertexai
+from vertexai.generative_models import GenerativeModel
+
+# Load environment variables
+load_dotenv()
+
+# Initialize Vertex AI
+vertexai.init(project="brianrivera26techx25", location="us-central1")
+
+# Load the generative model
+model = GenerativeModel("gemini-2.0-flash-001")
+
+# --- Dummy user data ---
 users = {
     'user1': {
         'full_name': 'Remi',
@@ -223,54 +237,156 @@ def get_user_workouts(user_id):
     return workouts
 
 
-def get_user_profile(user_id):
-    """Returns information about the given user.
+# def get_user_profile(user_id):
+#     """Returns information about the given user.
 
-    This function currently returns random data. You will re-write it in Unit 3.
+#     This function currently returns random data. You will re-write it in Unit 3.
+#     """
+#     if user_id not in users:
+#         raise ValueError(f'User {user_id} not found.')
+#     return users[user_id]
+
+def get_user_profile(user_id):
+    """Returns user profile info and friends list from BigQuery."""
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
+
+
+    # Query for user info
+    user_query = f"""
+        SELECT UserId, Name, Username, ImageUrl, DateOfBirth
+        FROM `brianrivera26techx25.ISE.Users`
+        WHERE UserId = @user_id
     """
-    if user_id not in users:
-        raise ValueError(f'User {user_id} not found.')
-    return users[user_id]
+    user_job = client.query(user_query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    user_result = list(user_job.result())
+    if not user_result:
+        raise ValueError(f"'{user_id}' was not found.")
+
+    user_row = user_result[0]
+
+    # Query for friends
+    friends_query = f"""
+        SELECT UserId1, UserId2
+        FROM `brianrivera26techx25.ISE.Friends`
+        WHERE UserId1 = @user_id OR UserId2 = @user_id
+    """
+    friends_job = client.query(friends_query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+    friends = set()
+    for row in friends_job:
+        if row.UserId1 == user_id:
+            friends.add(row.UserId2)
+        else:
+            friends.add(row.UserId1)
+
+    # Return user profile dictionary
+    return {
+        'full_name': user_row.Name,
+        'username': user_row.Username,
+        'date_of_birth': str(user_row.DateOfBirth),
+        'profile_image': user_row.ImageUrl,
+        'friends': list(friends)
+    }
 
 def get_user_posts(user_id):
-    """Returns a list of a user's posts.
-
-    This function currently returns random data.
     """
-    content = random.choice([
-        'Had a great workout today!',
-        'The AI really motivated me to push myself further, I ran 10 miles!',
-    ])
+    Returns a list of a user's posts. Some data in a post may not be populated.
+    Input: user_id
+    Output: A list of posts. Each post is a dictionary with keys user_id, post_id, timestamp, content, and image.
 
-    user_info = get_user_profile(user_id)
-    
-    return {
-        'user_id': user_info['username'], 
-        'post_id': 'post1',
-        'timestamp': '2024-01-01 00:00:00',
-        'content': content,
-        'user_image': user_info['profile_image'], 
-        'post_image': 'https://i.imgur.com/61ZEkcrb.jpg', 
-    }
+    """
+    client = bigquery.Client(project="brianrivera26techx25",location="US")
+
+    query = f"""
+SELECT
+    p.PostId AS post_id,
+    p.AuthorId AS user_id,
+    p.Timestamp AS timestamp,
+    p.Content AS content,
+    p.ImageUrl AS image,
+    u.ImageUrl AS profile_image
+FROM
+    `brianrivera26techx25.ISE.Posts` p
+JOIN
+    `brianrivera26techx25.ISE.Users` u
+ON
+    p.AuthorId = u.UserId
+WHERE
+    p.AuthorId = @user_id
+    """
+
+    # Running the query with the user_id as a parameter
+    query_job = client.query(query, job_config=bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+        ]
+    ))
+
+
+    # Wait for the query to complete and get the results
+    results = query_job.result()
+    posts = []
+    for row in results:
+        row_post = {
+            'user_id': row.user_id,
+            'post_id': row.post_id,
+            'timestamp': row.timestamp,
+            'content': row.content,
+            'image': row.image,
+            'profile_image': row.profile_image
+        }
+        posts.append(row_post)
+    return posts
+    # }
+
 
 def get_genai_advice(user_id):
-    """Returns the most recent advice from the genai model.
+    """Returns motivational advice generated via Vertex AI."""
+    try:
+        client = bigquery.Client(project=os.getenv("PROJECT_ID"))
+        query = """
+            SELECT Name, Username, DateOfBirth
+            FROM `brianrivera26techx25.ISE.Users`
+            WHERE UserId = @user_id
+        """
+        job_config = bigquery.QueryJobConfig(
+            query_parameters=[bigquery.ScalarQueryParameter("user_id", "STRING", user_id)]
+        )
+        results = list(client.query(query, job_config=job_config).result())
+        if not results:
+            return None
 
-    This function currently returns random data. You will re-write it in Unit 3.
-    """
-    advice = random.choice([
-        'Your heart rate indicates you can push yourself further. You got this!',
-        "You're doing great! Keep up the good work.",
-        'You worked hard yesterday, take it easy today.',
-        'You have burned 100 calories so far today!',
-    ])
-    image = random.choice([
-        'https://plus.unsplash.com/premium_photo-1669048780129-051d670fa2d1?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        None,
-    ])
-    return {
-        'advice_id': 'advice1',
-        'timestamp': '2024-01-01 00:00:00',
-        'content': advice,
-        'image': image,
-    }
+        user = results[0]
+        prompt = (
+            f"Give one short motivational fitness tip to a user named {user['Name']} "
+            f"(username: @{user['Username']}), born on {user['DateOfBirth']}. Keep it fun and inspiring!"
+        )
+
+        response = model.generate_content(prompt)
+
+        return {
+            'advice_id': str(uuid.uuid4()),
+            'timestamp': datetime.utcnow().isoformat(),
+            'content': response.text.strip(),
+            'image': random.choice([
+                'https://plus.unsplash.com/premium_photo-1669048780129-051d670fa2d1?q=80&w=3870&auto=format&fit=crop&ixlib=rb-4.0.3',
+                None
+            ])
+        }
+
+    except Exception as e:
+        return {
+            'advice_id': str(uuid.uuid4()),
+            'timestamp': datetime.utcnow().isoformat(),
+            'content': f"😴 The cat is too sleepy to give advice right now... (Error: {str(e)})",
+            'image': None
+        }

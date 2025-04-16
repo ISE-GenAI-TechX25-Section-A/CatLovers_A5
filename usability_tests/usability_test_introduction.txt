@@ -1,0 +1,33 @@
+﻿* Participant introduction: Introduce yourself and your team, give the participant a brief overview of their role in the user study and the persona they will be playing while interacting with the application. 
+   * Ensure they understand to speak aloud often to explain their thoughts, actions, and intentions before performing an action.
+* Tasks: Provide users with a scenario in which they want to perform a given task. 
+   * Ask users to let you know when they think a task is complete. 
+   * Be sure that the wording of your task does not use keywords that might point them at how to complete it.
+      * For example, use language like “You want to download WhatsApp” as opposed to “Install WhatsApp using the App Store” since both “App Store” and “Install” are things they might view on the screen.
+* Notes: Take notes of where a user is confused, hesitant, or misunderstanding the experience. These are areas you may want to fix later.
+* Feedback: After the participant indicates their task is complete, ask them for feedback.
+   * How easy/hard was it to complete the task given? 
+   * What confusions were there? Why were they confused? 
+   * What could be improved?
+* Results: After the test, list out the issues/challenges that participants had, hypothesize the reason for each, and list your chosen remedy to improve it. 
+   * Include participant quotes in your explanation of the problem.
+
+
+Script:
+Hello, my name is [name]. I will be conducting this test. Remember, this is a test for the product, not for you. Don’t be afraid to ask questions or point out something you are confused about. Please speak your thought process outloud. I will ask you some thoughts about your experience after. Your feedback will help us improve our product. Today, you will assume the role of a moderately active person who wants to track their workouts to improve their health. You will have 4 tasks to complete today.
+1. View other kinds of workouts
+2. Add a workout to the tracker
+3. Log a workout you completed
+4. Add a weekly goal
+
+
+This will not be longer than 20 minutes. Remember to relax and we’ll begin now.
+
+
+[they perform tasks and you take notes]
+
+
+Thank you for testing our product. As I mentioned earlier, I have a few questions for you.
+* How easy/hard was it to complete the task given? 
+* What confusions were there? Why were they confused? 
+* What could be improved?

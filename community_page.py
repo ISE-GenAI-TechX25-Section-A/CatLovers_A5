@@ -33,7 +33,7 @@ def display_community_page(userId):
     """
     This page is a “home” page for socialization across the app. 
     It includes:
-        First 10 posts from a user’s friends ordered by timestamp
+        First 10 posts from a user's friends ordered by timestamp
         One piece of GenAI advice and encouragement (picture not always populated)
         
     Parameters:
@@ -43,25 +43,39 @@ def display_community_page(userId):
         Nothing
     """
 
-    """Display User Friend's Posts Section"""
-    profile = {}
-    profile = get_user_profile(userId) #dictionary. One of the keys is a list of friend userIds
-    posts = [] #a list filled with a list of dictionaries of posts
-    friends = profile["friends"] #a list of friend userIds
-    #get all posts from a user's friends
+    # Section: Friend Feed
+    st.markdown("## 📰 Friend Feed")
+    st.markdown("*Check out the latest from your friends!*")
+
+    profile = get_user_profile(userId)  # dictionary; includes list of friend userIds
+    posts = []  # a list to hold posts from friends
+    friends = profile["friends"]  # list of friend userIds
+
+    # Get all posts from a user's friends
     for user in friends:
-        posts.append(get_user_posts(user))
-    #sort posts by timestamp
-    posts.sort(key=lambda x: x["timestamp"])
-    #display first 10 posts
+        user_posts = get_user_posts(user)
+        if isinstance(user_posts, list):
+            posts.extend(user_posts)
+        else:
+            posts.append(user_posts)  # if it’s just one post as a dict
+
+    # Sort posts by timestamp (newest first)
+    posts.sort(key=lambda x: x["timestamp"], reverse=True)
+
+    # Display first 10 posts
     for post in posts[:10]:
         display_post(post)
 
-    """GenAI advice section"""
+    # Section: GenAI Advice
+    st.markdown("---")
+    st.markdown("## 🌟 GenAI Advice & Encouragement")
+    st.markdown("_Here's your daily boost of wisdom and motivation!_")
+
     advice = get_genai_advice(userId)
-    if advice["image"]:
-        st.image(advice["image"])
-    st.write(advice["content"])
+    if advice.get("image"):
+        st.image(advice["image"], caption="🌈 Daily Motivation", use_column_width=True)
+    st.info(advice.get("content", "You're doing great! Keep going! 💪"))
+
 
 if __name__ == "__main__":
     display_community_page(userId)

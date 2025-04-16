@@ -1,2 +1,5 @@
 streamlit
 streamlit-elements==0.1.*
+google-cloud-bigquery
+python-dotenv
+vertexai

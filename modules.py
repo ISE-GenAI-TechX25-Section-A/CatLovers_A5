@@ -15,6 +15,7 @@ from streamlit_elements import elements, mui, html
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import uuid
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 
 
@@ -38,7 +39,7 @@ def display_my_custom_component(value):
     html_file_name = "my_custom_component"
     create_component(data, html_file_name)
 
-def display_post(post_info):
+def display_post(post_info, key=0):
     """Displays a user post in an Instagram-like style within the Streamlit app.
 
     Args:
@@ -48,17 +49,18 @@ def display_post(post_info):
     Returns:
         None
     """
-    
+
+
     with st.container():
         col1, col2 = st.columns([1, 5]) 
         with col1:
-            st.image(post_info['user_image'], width=40) 
+            st.image(post_info['profile_image'], width=40) 
         with col2:
             st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  
             st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 
 
-        if post_info.get('post_image'):
-            st.image(post_info['post_image'], width=350) 
+        if post_info.get('image'):
+            st.image(post_info['image'], width=350)
 
         st.markdown(f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>", unsafe_allow_html=True)
 
@@ -67,11 +69,11 @@ def display_post(post_info):
         # Like and Comment buttons
         col1, col2 = st.columns([1, 1]) 
         with col1:
-            like_button = st.button("Like", key=f"like_{post_info['post_id']}")
+            like_button = st.button("Like", key=f"like_{post_info['post_id']}_{key}")
             if like_button:
                 st.write("You liked this post!")
         with col2:
-            comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}")
+            comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}_{key}")
             if comment_button:
                 st.write("Comment functionality is under development.")  # Placeholder for comment functionality
 
@@ -267,3 +269,101 @@ def display_genai_advice(timestamp, content, image=None):
 
     if image:
         st.image(image, caption="Stay motivated!", use_container_width=True)
+
+def display_user_profile(user_profile):
+    # Page header
+    st.markdown("<h1 style='text-align: center; color: orange;'>😺💼 Muscle Meow: User Profile 📋</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: gray;'>Every legend starts with a profile. 🔍</h3>", unsafe_allow_html=True)
+
+    # Input box to type a User ID
+    user_id = st.text_input("🆔 Enter user ID", "user1")
+    if not user_id:
+        st.warning("⚠️ Please enter a valid user ID.")
+        return
+
+    if st.button("📂 Show User Profile"):
+        try:
+            # Retrieve user profile
+            if user_id != 'user1':
+                user = get_user_profile(user_id)
+            else:
+                user = user_profile
+
+            # Display user information
+            if user_id == 'user1' or user_id == 'user2' or user_id == 'user3':
+                st.subheader(f"👤 Profile: {user['full_name']} (@{user['username']})")
+                
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    # st.write(user['profile_image'])
+                    st.image(user['profile_image'], caption="Profile Picture", width=250)
+                with col2:
+                    st.write(f"**Full Name:** {user['full_name']}")
+                    st.write(f"**Username:** {user['username']}")
+                    st.write(f"**Date of Birth:** {user['date_of_birth']}")
+                    st.write(f"**User ID:** {user_id}")
+                    st.write(f"**Number of Friends:** {len(user['friends'])}")
+
+                # Display friends list
+                if user['friends']:
+                    st.markdown("---")
+                    st.markdown("### 🧑‍🤝‍🧑 Friends")
+                    for friend_id in user['friends']:
+                        st.write(f"• {friend_id}")
+                else:
+                    st.info("This user has no friends 😿")
+            else:
+                st.info("No user profile found.")
+
+        except ValueError:
+            st.error(f"'{user_id}' was not found.")
+            
+def display_activity_page(user_id):
+    """Displays the user's activity page with recent workouts, a summary, and a share button."""
+    st.markdown("## 🔥 Your Activity")
+
+    # Fetch workouts
+    workouts = get_user_workouts(user_id)
+    if not workouts:
+        st.warning("No workouts found.")
+        return
+
+    # Display Recent 3 Workouts
+    st.markdown("### 🏃 Recent Workouts")
+    recent_workouts = sorted(workouts, key=lambda w: w['start_timestamp'], reverse=True)[:3]
+    for workout in recent_workouts:
+        with st.expander(f"Workout: {workout['start_timestamp']}"):
+            st.write(f"Distance: {workout['distance']} km")
+            st.write(f"Steps: {workout['steps']}")
+            st.write(f"Calories Burned: {workout['calories_burned']}")
+
+    # Display Activity Summary
+    st.markdown("---")
+    st.markdown("### 📊 Activity Summary")
+    display_activity_summary(workouts)
+
+    # Share a Stat
+    st.markdown("---")
+    st.markdown("### ✨ Share Your Stats")
+    stat_option = st.selectbox("Pick a stat to share with your friends:", ["Steps", "Calories", "Distance"])
+    stat_map = {
+        "Steps": lambda w: w['steps'],
+        "Calories": lambda w: w['calories_burned'],
+        "Distance": lambda w: w['distance']
+    }
+    selected_workout = recent_workouts[0] if recent_workouts else None
+    if selected_workout and st.button("Share it!"):
+        value = stat_map[stat_option](selected_workout)
+        content = f"Look at this, I logged {value} {stat_option.lower()} today! 💪🐾"
+        st.success("Post shared with the community!")
+
+        # You can replace this with actual BigQuery insertion later
+        post = {
+            'user_id': get_user_profile(user_id)['username'],
+            'post_id': str(uuid.uuid4()),
+            'timestamp': datetime.utcnow().isoformat(),
+            'content': content,
+            'user_image': get_user_profile(user_id)['profile_image'],
+            'post_image': 'https://i.imgur.com/61ZEkcrb.jpg'
+        }
+        display_post(post)

@@ -1,0 +1,32 @@
+﻿Feature 1 
+Feature 2
+Notes:
+* Streaks are motivational 
+* Explanation on cat points, user wants to max their cats points 
+* User wants to see first things that are relevant, streaks 
+* They like buff cats, make them more prominent 
+* Layout 7/10
+* They like the gifs
+* Making questions more explicit, aka Add workouts to the tracker? is daily weekly 
+
+
+Feedback:
+* How easy/hard was it to complete the task given? 
+   * 3/10, user navigation and journey 
+   * 7/10 difficult navigation 
+* What confusions were there? Why were they confused?
+   * Layout structure in figma is confused 
+* What could be improved?
+   * Have more parameters for workouts added, time, weights, etc. 
+   * Implement the gif and text workouts together 
+   * Make it so when you select a gif it all changes colors 
+   * Buff cat points is based on workouts, crunches 5 cat points per crunch
+Results:
+* Challenges: Users struggled to understand how their selections impacted progress, and found the layout unclear. It wasn’t obvious that selecting a workout would contribute to Buff Cat Points, and dropdown options weren’t clearly connected to the goal setting sections.
+* Hypothesis: These issues likely stem from weak visual feedback and a lack of clear layout structure. Key components (like dropdowns or workout impacts) were not visually connected, and some users weren’t sure what their interactions were achieving.
+   * Participant stated: “I clicked a workout but wasn’t sure if it did anything... does it count towards my cat points?”
+* Fixes:
+   * Fix #1: Add a visual confirmation (e.g., highlight, animation, or color change) when a workout is selected
+   * Connect each selection to Buff Cat Points visually with a small pop-up — “+5 cat points earned!”
+   * Fix #2: Reorganize goal options (daily, weekly, monthly) into clearly labeled tabs
+   * Add tooltips or hint text next to buttons like “Add Work” or “Make Daily Goals” so users understand their purpose instantly
