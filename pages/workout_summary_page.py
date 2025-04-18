@@ -117,8 +117,6 @@ with col1:
     st.markdown("### 🏃 Recent Workouts")
     if st.button("See More"):
         st.switch_page("pages/recent_workouts_page.py")
-        #st.write("Functionality Currently Under Development")
-        #st.switch_page("/CatLovers_A5/[page_name].py")
 
 with col2:
     st.markdown("### 📊 Activity Summary")

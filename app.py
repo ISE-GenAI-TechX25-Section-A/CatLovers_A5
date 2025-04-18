@@ -48,6 +48,7 @@ def display_app_page():
             st.Page("pages/home_page.py", title="🏠 Home"),
             st.Page("pages/posts_page.py", title="📝 Posts"),
             st.Page("pages/ai_advice_page.py", title="🤖 AI Advice"),
+            st.Page("pages/accountability_tracker_page.py", title="🧐 Accountability Tracker"),
         ],
         "Your Workouts": [
             st.Page("pages/workout_summary_page.py", title="📊 Workout Summary"),
