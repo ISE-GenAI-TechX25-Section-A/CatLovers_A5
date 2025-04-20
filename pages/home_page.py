@@ -52,6 +52,6 @@ components.html(f"""
 html_file_name = "my_custom_component"
 create_component(data, html_file_name)
 
-if __name__ == "__main__":
-    userId = st.session_state.user_id
-    main(userId)
+# if __name__ == "__main__":
+#     userId = st.session_state.user_id
+#     main(userId)
