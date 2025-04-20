@@ -33,6 +33,7 @@ def display_my_custom_component(value):
     # occurs. You can add as many variables as you want.
     data = {
         'NAME': value,
+        'BG_COLOR': "#0e1117",
     }
     # Register and display the component by providing the data and name
     # of the HTML file. HTML must be placed inside the "custom_components" folder.
