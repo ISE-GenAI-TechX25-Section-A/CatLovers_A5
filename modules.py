@@ -13,6 +13,7 @@ import calendar
 import streamlit as st
 from streamlit_elements import elements, mui, html
 import pandas as pd
+import uuid
 from datetime import datetime, timedelta
 from data_fetcher import (
     get_user_posts,
