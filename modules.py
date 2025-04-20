@@ -16,9 +16,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import uuid
-from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
-
-
+from data_fetcher import (
+    get_user_posts,
+    get_genai_advice,
+    get_user_profile,
+    get_user_sensor_data,
+    get_user_workouts,
+)
 
 
 # This one has been written for you as an example. You may change it as wanted.
@@ -32,13 +36,14 @@ def display_my_custom_component(value):
     # 'value' will be inserted to the templated HTML file wherever '{{NAME}}'
     # occurs. You can add as many variables as you want.
     data = {
-        'NAME': value,
-        'BG_COLOR': "#0e1117",
+        "NAME": value,
+        "BG_COLOR": "#0e1117",
     }
     # Register and display the component by providing the data and name
     # of the HTML file. HTML must be placed inside the "custom_components" folder.
     html_file_name = "my_custom_component"
     create_component(data, html_file_name)
+
 
 def display_post(post_info, key=0):
     """Displays a user post in an Instagram-like style within the Streamlit app.
@@ -51,33 +56,43 @@ def display_post(post_info, key=0):
         None
     """
 
-
     with st.container():
-        col1, col2 = st.columns([1, 5]) 
+        col1, col2 = st.columns([1, 5])
         with col1:
-            st.image(post_info['profile_image'], width=40) 
+            st.image(post_info["profile_image"], width=40)
         with col2:
-            st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)  
-            st.markdown(f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True) 
+            st.markdown(f"**{post_info['user_id']}**", unsafe_allow_html=True)
+            st.markdown(
+                f"<small>{post_info['timestamp']}</small>", unsafe_allow_html=True
+            )
 
-        if post_info.get('image'):
-            st.image(post_info['image'], width=350)
+        if post_info.get("image"):
+            st.image(post_info["image"], width=350)
 
-        st.markdown(f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='font-size: 14px; margin-top: 10px;'>{post_info['content']}</div>",
+            unsafe_allow_html=True,
+        )
 
-        st.markdown("<hr style='border: 0; border-top: 1px solid #ddd;'>", unsafe_allow_html=True)
-        
+        st.markdown(
+            "<hr style='border: 0; border-top: 1px solid #ddd;'>",
+            unsafe_allow_html=True,
+        )
+
         # Like and Comment buttons
-        col1, col2 = st.columns([1, 1]) 
+        col1, col2 = st.columns([1, 1])
         with col1:
             like_button = st.button("Like", key=f"like_{post_info['post_id']}_{key}")
             if like_button:
                 st.write("You liked this post!")
         with col2:
-            comment_button = st.button("Comment", key=f"comment_{post_info['post_id']}_{key}")
+            comment_button = st.button(
+                "Comment", key=f"comment_{post_info['post_id']}_{key}"
+            )
             if comment_button:
-                st.write("Comment functionality is under development.")  # Placeholder for comment functionality
-
+                st.write(
+                    "Comment functionality is under development."
+                )  # Placeholder for comment functionality
 
 
 def display_activity_summary(workouts_list):
@@ -86,9 +101,9 @@ def display_activity_summary(workouts_list):
     Displays a summary of the averages
     Links to the "recent workouts" page
 
-    Parameters: 
+    Parameters:
         workouts_list: a list of workouts for a specified user
-            workouts contain: 
+            workouts contain:
                 'workout_id'
                 'start_timestamp'
                 'end_timestamp'
@@ -98,25 +113,25 @@ def display_activity_summary(workouts_list):
                 'steps'
                 'calories_burned'
 
-    Returns: 
+    Returns:
         Nothing
-    
+
     """
     distances = []
     calories = []
     steps = []
     begin = []
     end = []
-    #workouts_list = get_user_sensor_data("user1", "workout1")
-    #st.write(workouts_list)
-    #get the data from each workout in the list
+    # workouts_list = get_user_sensor_data("user1", "workout1")
+    # st.write(workouts_list)
+    # get the data from each workout in the list
     for workout in workouts_list:
-        distances.append(workout['distance'])
-        calories.append(workout['calories_burned'])
-        steps.append(workout['steps'])
-        begin.append(workout['start_timestamp'])
-        end.append(workout['end_timestamp'])
-    
+        distances.append(workout["distance"])
+        calories.append(workout["calories_burned"])
+        steps.append(workout["steps"])
+        begin.append(workout["start_timestamp"])
+        end.append(workout["end_timestamp"])
+
     avg_distances = round(statistics.mean(distances), 2)
     avg_calories = round(statistics.mean(calories), 2)
     avg_steps = round(statistics.mean(steps), 2)
@@ -133,12 +148,27 @@ def display_activity_summary(workouts_list):
     saturday = 0
     sunday = 0
 
-    days_of_week = {"Monday":monday, "Tuesday":tuesday, "Wednesday":wednesday, "Thursday":thursday, "Friday":friday, "Saturday":saturday, "Sunday":sunday}
-    day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] #Line written by ChatGPT
-    time_of_day = {"Morning":morning, "Afternoon":afternoon, "Evening":evening}
+    days_of_week = {
+        "Monday": monday,
+        "Tuesday": tuesday,
+        "Wednesday": wednesday,
+        "Thursday": thursday,
+        "Friday": friday,
+        "Saturday": saturday,
+        "Sunday": sunday,
+    }
+    day_names = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]  # Line written by ChatGPT
+    time_of_day = {"Morning": morning, "Afternoon": afternoon, "Evening": evening}
 
-
-    #splits the timestamp data into date and time and uses the hour to determine the time of day and the date to determine day of the week
+    # splits the timestamp data into date and time and uses the hour to determine the time of day and the date to determine day of the week
     for timestamp in begin:
         date = timestamp.date()
         time = timestamp.time()
@@ -148,47 +178,44 @@ def display_activity_summary(workouts_list):
         year = timestamp.year
         month = timestamp.month
         day = timestamp.day
-        
+
         if hour < 12:
             time_of_day["Morning"] += 1
         elif hour > 17:
             time_of_day["Evening"] += 1
         else:
             time_of_day["Afternoon"] += 1
-        
-        weekday = calendar.weekday(year, month, day)
-        days_of_week[day_names[weekday]] += 1 #Line written by ChatGPT
 
-    
-    #workout length calculation written by ChatGPT
+        weekday = calendar.weekday(year, month, day)
+        days_of_week[day_names[weekday]] += 1  # Line written by ChatGPT
+
+    # workout length calculation written by ChatGPT
     lengths = []
     for i in range(len(begin)):
         start_time = begin[i]
         end_time = end[i]
-        
+
         lengths.append((end_time - start_time).total_seconds())
-    
+
     avg_seconds = statistics.mean(lengths)
     avg_duration = timedelta(seconds=avg_seconds)
     hours, remainder = divmod(avg_duration.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
 
     workoutLength = f"{hours:02}:{minutes:02}:{seconds:02}"
-    
+
     fav_time_of_day = max(time_of_day, key=time_of_day.get)
     fav_day_of_week = max(days_of_week, key=days_of_week.get)
 
-
-
-    col1, col2 = st.columns([1,2])
+    col1, col2 = st.columns([1, 2])
 
     with col1:
         st.subheader("Recent Workouts")
         if st.button("See More"):
-            #page = "📅 Recent Workouts"
+            # page = "📅 Recent Workouts"
             st.write("Functionality Currently Under Development")
-            #pass
-            #st.switch_page("/CatLovers_A5/[page_name].py")
+            # pass
+            # st.switch_page("/CatLovers_A5/[page_name].py")
 
     with col2:
         st.subheader("Summary")
@@ -204,38 +231,41 @@ def display_activity_summary(workouts_list):
             st.metric("Favorite Day of Week", fav_day_of_week)
             st.metric("Average Length of Workouts", workoutLength)
 
-    #st.caption(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
+    # st.caption(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
     st.markdown(
-    f"""
+        f"""
     <div style="text-align: center; font-size: 0.8em;">
         Congratulations! Your favorite time to workout is <b>{fav_time_of_day}</b>.
         You work out most on <b>{fav_day_of_week}</b>. You burn an average of <b>{avg_calories}</b> calories in <b>{workoutLength}</b> time.
     </div>
     """,
-    unsafe_allow_html=True
-)
+        unsafe_allow_html=True,
+    )
 
     st.bar_chart(days_of_week, x_label="Weekday", y_label="Frequency")
-
-    
-    
 
 
 def display_recent_workouts(workouts_list):
     # Page header
-    st.markdown("<h1 style='text-align: center; color: orange;'>🐱💪 Muscle Meow: Recent Workouts 🏋️‍♂️</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: gray;'>Train like a beast, rest like a cat. 😼</h3>", unsafe_allow_html=True)
-    
+    st.markdown(
+        "<h1 style='text-align: center; color: orange;'>🐱💪 Muscle Meow: Recent Workouts 🏋️‍♂️</h1>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<h3 style='text-align: center; color: gray;'>Train like a beast, rest like a cat. 😼</h3>",
+        unsafe_allow_html=True,
+    )
+
     # Get user input for user ID
     user_id = st.text_input("🔍 Enter user ID", "user1")
     if not user_id:
         st.warning("⚠️ Please enter a valid user ID.")
         return
-    if user_id != 'user1':
+    if user_id != "user1":
         workouts = get_user_workouts(user_id)
     else:
         workouts = workouts_list
- 
+
     # Button to trigger the workouts display
     if st.button("🐾Show Recent Workouts🐾"):
         try:
@@ -251,11 +281,20 @@ def display_recent_workouts(workouts_list):
                             st.write(f"**End Time:** {workout['end_timestamp']}")
                             st.write(f"**Distance:** {workout['distance']} km")
                             st.write(f"**Steps Taken:** {workout['steps']}")
-                            st.write(f"**Calories Burned:** {workout['calories_burned']} kcal")
-                            st.write(f"**Start Location (Lat, Lng):** ({workout['start_lat_lng']['lat']},{workout['start_lat_lng']['lng']})")
-                            st.write(f"**End Location (Lat, Lng):** ({workout['end_lat_lng']['lat']},{workout['end_lat_lng']['lng']})")
+                            st.write(
+                                f"**Calories Burned:** {workout['calories_burned']} kcal"
+                            )
+                            st.write(
+                                f"**Start Location (Lat, Lng):** ({workout['start_lat_lng']['lat']},{workout['start_lat_lng']['lng']})"
+                            )
+                            st.write(
+                                f"**End Location (Lat, Lng):** ({workout['end_lat_lng']['lat']},{workout['end_lat_lng']['lng']})"
+                            )
                 st.divider()
-                st.markdown("<h3 style='text-align: center; color: green;'>🔥 Push yourself! No one is going to do it for you! 🔥</h3>", unsafe_allow_html=True)
+                st.markdown(
+                    "<h3 style='text-align: center; color: green;'>🔥 Push yourself! No one is going to do it for you! 🔥</h3>",
+                    unsafe_allow_html=True,
+                )
             else:
                 st.info("No recent workouts found.")
         except ValueError:
@@ -271,10 +310,17 @@ def display_genai_advice(timestamp, content, image=None):
     if image:
         st.image(image, caption="Stay motivated!", use_container_width=True)
 
+
 def display_user_profile(user_profile):
     # Page header
-    st.markdown("<h1 style='text-align: center; color: orange;'>😺💼 Muscle Meow: User Profile 📋</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: gray;'>Every legend starts with a profile. 🔍</h3>", unsafe_allow_html=True)
+    st.markdown(
+        "<h1 style='text-align: center; color: orange;'>😺💼 Muscle Meow: User Profile 📋</h1>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<h3 style='text-align: center; color: gray;'>Every legend starts with a profile. 🔍</h3>",
+        unsafe_allow_html=True,
+    )
 
     # Input box to type a User ID
     user_id = st.text_input("🆔 Enter user ID", "user1")
@@ -285,19 +331,21 @@ def display_user_profile(user_profile):
     if st.button("📂 Show User Profile"):
         try:
             # Retrieve user profile
-            if user_id != 'user1':
+            if user_id != "user1":
                 user = get_user_profile(user_id)
             else:
                 user = user_profile
 
             # Display user information
-            if user_id == 'user1' or user_id == 'user2' or user_id == 'user3':
+            if user_id == "user1" or user_id == "user2" or user_id == "user3":
                 st.subheader(f"👤 Profile: {user['full_name']} (@{user['username']})")
-                
+
                 col1, col2 = st.columns([1, 2])
                 with col1:
                     # st.write(user['profile_image'])
-                    st.image(user['profile_image'], caption="Profile Picture", width=250)
+                    st.image(
+                        user["profile_image"], caption="Profile Picture", width=250
+                    )
                 with col2:
                     st.write(f"**Full Name:** {user['full_name']}")
                     st.write(f"**Username:** {user['username']}")
@@ -306,10 +354,10 @@ def display_user_profile(user_profile):
                     st.write(f"**Number of Friends:** {len(user['friends'])}")
 
                 # Display friends list
-                if user['friends']:
+                if user["friends"]:
                     st.markdown("---")
                     st.markdown("### 🧑‍🤝‍🧑 Friends")
-                    for friend_id in user['friends']:
+                    for friend_id in user["friends"]:
                         st.write(f"• {friend_id}")
                 else:
                     st.info("This user has no friends 😿")
@@ -318,7 +366,8 @@ def display_user_profile(user_profile):
 
         except ValueError:
             st.error(f"'{user_id}' was not found.")
-            
+
+
 def display_activity_page(user_id):
     """Displays the user's activity page with recent workouts, a summary, and a share button."""
     st.markdown("## 🔥 Your Activity")
@@ -331,7 +380,9 @@ def display_activity_page(user_id):
 
     # Display Recent 3 Workouts
     st.markdown("### 🏃 Recent Workouts")
-    recent_workouts = sorted(workouts, key=lambda w: w['start_timestamp'], reverse=True)[:3]
+    recent_workouts = sorted(
+        workouts, key=lambda w: w["start_timestamp"], reverse=True
+    )[:3]
     for workout in recent_workouts:
         with st.expander(f"Workout: {workout['start_timestamp']}"):
             st.write(f"Distance: {workout['distance']} km")
@@ -346,11 +397,13 @@ def display_activity_page(user_id):
     # Share a Stat
     st.markdown("---")
     st.markdown("### ✨ Share Your Stats")
-    stat_option = st.selectbox("Pick a stat to share with your friends:", ["Steps", "Calories", "Distance"])
+    stat_option = st.selectbox(
+        "Pick a stat to share with your friends:", ["Steps", "Calories", "Distance"]
+    )
     stat_map = {
-        "Steps": lambda w: w['steps'],
-        "Calories": lambda w: w['calories_burned'],
-        "Distance": lambda w: w['distance']
+        "Steps": lambda w: w["steps"],
+        "Calories": lambda w: w["calories_burned"],
+        "Distance": lambda w: w["distance"],
     }
     selected_workout = recent_workouts[0] if recent_workouts else None
     if selected_workout and st.button("Share it!"):
@@ -358,21 +411,21 @@ def display_activity_page(user_id):
         content = f"Look at this, I logged {value} {stat_option.lower()} today! 💪🐾"
         st.success("Post shared with the community!")
 
-        
         post = {
-            'user_id': get_user_profile(user_id)['username'],
-            'post_id': str(uuid.uuid4()),
-            'timestamp': datetime.utcnow().isoformat(),
-            'content': content,
-            'user_image': get_user_profile(user_id)['profile_image'],
-            'post_image': 'https://i.imgur.com/61ZEkcrb.jpg'
+            "user_id": get_user_profile(user_id)["username"],
+            "post_id": str(uuid.uuid4()),
+            "timestamp": datetime.utcnow().isoformat(),
+            "content": content,
+            "user_image": get_user_profile(user_id)["profile_image"],
+            "post_image": "https://i.imgur.com/61ZEkcrb.jpg",
         }
         display_post(post)
+
 
 # ACCOUNTABILITY TRACKER
 def display_streak_tracker(user_id):
     workouts_list = get_user_workouts(user_id)
-    weekdays = [workout['start_timestamp'].date() for workout in workouts_list]
+    weekdays = [workout["start_timestamp"].date() for workout in workouts_list]
     weekdays.sort()
 
     streak = 1 if weekdays else 0
@@ -393,13 +446,17 @@ def display_streak_tracker(user_id):
     else:
         congrats = ""
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style=\"text-align: center; font-size: 1.2em; margin-top: 20px;\">
         <strong>🔥 Streak Tracker:</strong><br>
         {streak} days<br>
         <em>{congrats}</em>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
+
 
 def display_goal_progress_bars(user_id):
     daily_progress = 0.66
@@ -412,31 +469,48 @@ def display_goal_progress_bars(user_id):
     st.progress(weekly_progress, text="Weekly Progress")
     st.progress(monthly_progress, text="Monthly Progress")
 
+
 def display_buff_cat_points(user_id):
     points = 120
     st.markdown("### 💪 Buff Cat Points")
-    st.markdown(f"<div style='font-size: 28px; color: orange;'>⭐ {points} Points</div>", unsafe_allow_html=True)
-    st.caption("\nBuff Cat Points are your reward system! You earn between 5 and 15 points for every workout you log, depending on difficulty.\nTrack your points to stay motivated and unlock milestones!")
+    st.markdown(
+        f"<div style='font-size: 28px; color: orange;'>⭐ {points} Points</div>",
+        unsafe_allow_html=True,
+    )
+    st.caption(
+        "\nBuff Cat Points are your reward system! You earn between 5 and 15 points for every workout you log, depending on difficulty.\nTrack your points to stay motivated and unlock milestones!"
+    )
+
 
 def display_goal_creation_ui():
     st.markdown("### 🛠️ Create New Fitness Goals")
 
     goal_tabs = st.tabs(["📆 Daily", "📈 Weekly", "📊 Monthly"])
 
-    goal_data = st.session_state.setdefault("goal_data", {"Daily": [], "Weekly": [], "Monthly": []})
+    goal_data = st.session_state.setdefault(
+        "goal_data", {"Daily": [], "Weekly": [], "Monthly": []}
+    )
 
     for i, timeframe in enumerate(["Daily", "Weekly", "Monthly"]):
         with goal_tabs[i]:
             left, right = st.columns([1, 1])
             with left:
-                new_goal = st.text_input(f"Enter a {timeframe} Goal", key=f"{timeframe}_goal_input")
+                new_goal = st.text_input(
+                    f"Enter a {timeframe} Goal", key=f"{timeframe}_goal_input"
+                )
                 if st.button(f"➕ Add {timeframe} Goal"):
                     if new_goal:
-                        goal_data[timeframe].append({"text": new_goal, "completed": False})
+                        goal_data[timeframe].append(
+                            {"text": new_goal, "completed": False}
+                        )
                         st.success(f"Added {timeframe.lower()} goal: {new_goal}")
 
                 st.markdown("### 🏋️ Track Preloaded Workouts")
-                muscle_group = st.selectbox("Select Muscle Group", ["Legs", "Upper Body", "Core"], key=f"group_{timeframe}")
+                muscle_group = st.selectbox(
+                    "Select Muscle Group",
+                    ["Legs", "Upper Body", "Core"],
+                    key=f"group_{timeframe}",
+                )
                 if muscle_group == "Legs":
                     workouts = ["Squats", "Leg Press", "Lunges"]
                 elif muscle_group == "Upper Body":
@@ -445,9 +519,13 @@ def display_goal_creation_ui():
                     workouts = ["Crunches", "Plank", "Russian Twist"]
                 else:
                     workouts = []
-                selected_workout = st.selectbox("Pick a Workout", workouts, key=f"workout_{timeframe}")
+                selected_workout = st.selectbox(
+                    "Pick a Workout", workouts, key=f"workout_{timeframe}"
+                )
                 if st.button("➕ Add Work", key=f"log_{timeframe}"):
-                    goal_data[timeframe].append({"text": selected_workout, "completed": False})
+                    goal_data[timeframe].append(
+                        {"text": selected_workout, "completed": False}
+                    )
                     st.success(f"Added: {selected_workout}")
 
             with right:
@@ -463,5 +541,6 @@ def display_goal_creation_ui():
                                 if st.button("✔️", key=f"check_{timeframe}_{idx}"):
                                     goal["completed"] = True
 
+
 def display_preloaded_workout_logger():
-    pass  # moved inside display_goal_creation_ui 
+    pass  # moved inside display_goal_creation_ui
