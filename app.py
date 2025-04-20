@@ -23,6 +23,22 @@ st.set_page_config(page_title="Muscle Meow", page_icon="🐱💪", layout="wide"
 def login_page():
     """Displays the login page."""
     if "user_id" not in st.session_state:
+        # Hide sidebar when not logged in using css 
+        hide_sidebar_and_icon = """
+            <style>
+                /* Hide entire sidebar */
+                [data-testid="stSidebar"] {
+                    display: none !important;
+                }
+
+                /* Hide the top-left sidebar toggle button */
+                [data-testid="collapsedControl"] {
+                    display: none !important;
+                }
+            </style>
+        """
+        st.markdown(hide_sidebar_and_icon, unsafe_allow_html=True)
+
         st.title("Login to Muscle Meow🐱💪")
         user_id = st.text_input("🆔 Enter your user ID:")
 
@@ -63,6 +79,16 @@ def display_app_page():
 
     page = st.navigation(pages)
     page.run()
+
+    #spacing before logout button
+    with st.sidebar:
+        #st.markdown("<br><hr><br>", unsafe_allow_html=True)
+
+        # Log Out Button
+        if st.button("🚪 Log Out"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
     # Sidebar Navigation
     # st.sidebar.title("🏋️ Muscle Meow Navigation")
     # page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page","🔥 Activity"])

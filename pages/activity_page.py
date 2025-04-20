@@ -7,13 +7,14 @@ import calendar
 from streamlit_elements import elements, mui, html
 import pandas as pd
 import numpy as np
+from modules import display_post
 from datetime import datetime, timedelta
 import uuid
 #from pages.workout_summary_page import display_activity_summary
 
 userId = st.session_state.get("user_id", None)
 workouts = get_user_workouts(userId)
-
+user_id = userId
 #def display_activity_page(user_id):
 #"""Displays the user's activity page with recent workouts, a summary, and a share button."""
 st.markdown("## 🔥 Your Activity")
