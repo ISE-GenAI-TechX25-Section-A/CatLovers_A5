@@ -13,9 +13,7 @@ import calendar
 import streamlit as st
 from streamlit_elements import elements, mui, html
 import pandas as pd
-import numpy as np
 from datetime import datetime, timedelta
-import uuid
 from data_fetcher import (
     get_user_posts,
     get_genai_advice,
