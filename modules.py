@@ -358,7 +358,7 @@ def display_activity_page(user_id):
         content = f"Look at this, I logged {value} {stat_option.lower()} today! 💪🐾"
         st.success("Post shared with the community!")
 
-        # You can replace this with actual BigQuery insertion later
+        
         post = {
             'user_id': get_user_profile(user_id)['username'],
             'post_id': str(uuid.uuid4()),
@@ -368,3 +368,100 @@ def display_activity_page(user_id):
             'post_image': 'https://i.imgur.com/61ZEkcrb.jpg'
         }
         display_post(post)
+
+# ACCOUNTABILITY TRACKER
+def display_streak_tracker(user_id):
+    workouts_list = get_user_workouts(user_id)
+    weekdays = [workout['start_timestamp'].date() for workout in workouts_list]
+    weekdays.sort()
+
+    streak = 1 if weekdays else 0
+    for i in range(1, len(weekdays)):
+        if weekdays[i] == weekdays[i - 1] + timedelta(days=1):
+            streak += 1
+        else:
+            streak = 1
+
+    if streak == 7:
+        congrats = "Good job on making it one week without missing a day! You've earned 5 Buff Cat Points!"
+    elif streak == 30:
+        congrats = "Proud of you for making it 30 days without missing a day! You've earned 15 Buff Cat Points!"
+    elif streak == 180:
+        congrats = "You're so awesome for making it 180 days without missing a day! You've earned 30 Buff Cat Points!"
+    elif streak == 365:
+        congrats = "Wow, you made it one year without missing a day! You've earned 50 Buff Cat Points!"
+    else:
+        congrats = ""
+
+    st.markdown(f"""
+    <div style=\"text-align: center; font-size: 1.2em; margin-top: 20px;\">
+        <strong>🔥 Streak Tracker:</strong><br>
+        {streak} days<br>
+        <em>{congrats}</em>
+    </div>
+    """, unsafe_allow_html=True)
+
+def display_goal_progress_bars(user_id):
+    daily_progress = 0.66
+    weekly_progress = 0.30
+    monthly_progress = 0.10
+
+    st.markdown("### 🎯 Goal Progress")
+
+    st.progress(daily_progress, text="Daily Progress")
+    st.progress(weekly_progress, text="Weekly Progress")
+    st.progress(monthly_progress, text="Monthly Progress")
+
+def display_buff_cat_points(user_id):
+    points = 120
+    st.markdown("### 💪 Buff Cat Points")
+    st.markdown(f"<div style='font-size: 28px; color: orange;'>⭐ {points} Points</div>", unsafe_allow_html=True)
+    st.caption("\nBuff Cat Points are your reward system! You earn between 5 and 15 points for every workout you log, depending on difficulty.\nTrack your points to stay motivated and unlock milestones!")
+
+def display_goal_creation_ui():
+    st.markdown("### 🛠️ Create New Fitness Goals")
+
+    goal_tabs = st.tabs(["📆 Daily", "📈 Weekly", "📊 Monthly"])
+
+    goal_data = st.session_state.setdefault("goal_data", {"Daily": [], "Weekly": [], "Monthly": []})
+
+    for i, timeframe in enumerate(["Daily", "Weekly", "Monthly"]):
+        with goal_tabs[i]:
+            left, right = st.columns([1, 1])
+            with left:
+                new_goal = st.text_input(f"Enter a {timeframe} Goal", key=f"{timeframe}_goal_input")
+                if st.button(f"➕ Add {timeframe} Goal"):
+                    if new_goal:
+                        goal_data[timeframe].append({"text": new_goal, "completed": False})
+                        st.success(f"Added {timeframe.lower()} goal: {new_goal}")
+
+                st.markdown("### 🏋️ Track Preloaded Workouts")
+                muscle_group = st.selectbox("Select Muscle Group", ["Legs", "Upper Body", "Core"], key=f"group_{timeframe}")
+                if muscle_group == "Legs":
+                    workouts = ["Squats", "Leg Press", "Lunges"]
+                elif muscle_group == "Upper Body":
+                    workouts = ["Push-Ups", "Pull-Ups", "Bench Press"]
+                elif muscle_group == "Core":
+                    workouts = ["Crunches", "Plank", "Russian Twist"]
+                else:
+                    workouts = []
+                selected_workout = st.selectbox("Pick a Workout", workouts, key=f"workout_{timeframe}")
+                if st.button("➕ Add Work", key=f"log_{timeframe}"):
+                    goal_data[timeframe].append({"text": selected_workout, "completed": False})
+                    st.success(f"Added: {selected_workout}")
+
+            with right:
+                if goal_data[timeframe]:
+                    st.markdown(f"### {timeframe} Goals:")
+                    for idx, goal in enumerate(goal_data[timeframe]):
+                        col1, col2 = st.columns([0.9, 0.1])
+                        with col1:
+                            status = "✅" if goal["completed"] else "⬜"
+                            st.write(f"{status} {goal['text']}")
+                        with col2:
+                            if not goal["completed"]:
+                                if st.button("✔️", key=f"check_{timeframe}_{idx}"):
+                                    goal["completed"] = True
+
+def display_preloaded_workout_logger():
+    pass  # moved inside display_goal_creation_ui 
