@@ -79,6 +79,16 @@ def display_app_page():
 
     page = st.navigation(pages)
     page.run()
+
+    #spacing before logout button
+    with st.sidebar:
+        #st.markdown("<br><hr><br>", unsafe_allow_html=True)
+
+        # Log Out Button
+        if st.button("🚪 Log Out"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
     # Sidebar Navigation
     # st.sidebar.title("🏋️ Muscle Meow Navigation")
     # page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page","🔥 Activity"])
