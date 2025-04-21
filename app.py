@@ -83,7 +83,6 @@ def display_app_page():
     #spacing before logout button
     with st.sidebar:
         #st.markdown("<br><hr><br>", unsafe_allow_html=True)
-
         # Log Out Button
         if st.button("🚪 Log Out"):
             for key in list(st.session_state.keys()):

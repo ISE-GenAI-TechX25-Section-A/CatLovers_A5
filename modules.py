@@ -10,6 +10,7 @@
 from internals import create_component
 import statistics
 import calendar
+import time
 import streamlit as st
 from streamlit_elements import elements, mui, html
 import pandas as pd
@@ -457,31 +458,67 @@ def display_streak_tracker(user_id):
     )
 
 
-def display_goal_progress_bars(user_id):
-    daily_progress = 0.66
-    weekly_progress = 0.30
-    monthly_progress = 0.10
-
-    st.markdown("### 🎯 Goal Progress")
-
-    st.progress(daily_progress, text="Daily Progress")
-    st.progress(weekly_progress, text="Weekly Progress")
-    st.progress(monthly_progress, text="Monthly Progress")
-
-
 def display_buff_cat_points(user_id):
     points = 120
-    st.markdown("### 💪 Buff Cat Points")
+    #st.markdown("### 💪 Buff Cat Points")
+    st.markdown("""
+        <style>
+        .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+        font-size: 30px;
+        }
+
+        .tooltiptext {
+        visibility: hidden;
+        width: 280px;
+        font-size: 15px;
+        background-color: #f9f9f9;
+        color: #333;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        border: 1px solid #ccc;
+
+        position: absolute;
+        z-index: 1;
+        bottom: 125%; /* Position above text */
+        left: 50%;
+        transform: translateX(-50%);
+        
+        opacity: 0;
+        transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+        }
+        </style>
+
+        <div class="tooltip">💪 Buff Cat Points
+        <div class="tooltiptext">
+        Buff Cat Points are your reward system! You earn between 5 and 15 points for every workout you log, depending on difficulty.
+        <br>
+        Track your points to stay motivated and unlock milestones!</div>
+        </div>
+        """, unsafe_allow_html=True)
     st.markdown(
         f"<div style='font-size: 28px; color: orange;'>⭐ {points} Points</div>",
         unsafe_allow_html=True,
     )
-    st.caption(
-        "\nBuff Cat Points are your reward system! You earn between 5 and 15 points for every workout you log, depending on difficulty.\nTrack your points to stay motivated and unlock milestones!"
-    )
 
+#progress_bars = st.container()
 
 def display_goal_creation_ui():
+    for key in [
+        "total_daily_goals", "checked_daily_goals",
+        "total_weekly_goals", "checked_weekly_goals",
+        "total_monthly_goals", "checked_monthly_goals"
+    ]:
+        st.session_state.setdefault(key, 0)
+
     st.markdown("### 🛠️ Create New Fitness Goals")
 
     goal_tabs = st.tabs(["📆 Daily", "📈 Weekly", "📊 Monthly"])
@@ -503,7 +540,10 @@ def display_goal_creation_ui():
                             {"text": new_goal, "completed": False}
                         )
                         st.success(f"Added {timeframe.lower()} goal: {new_goal}")
-
+                        track_added_goals(timeframe.lower())
+                        #update_progress_bars()
+                        time.sleep(0.5)
+                        st.rerun()
                 st.markdown("### 🏋️ Track Preloaded Workouts")
                 muscle_group = st.selectbox(
                     "Select Muscle Group",
@@ -525,21 +565,72 @@ def display_goal_creation_ui():
                     goal_data[timeframe].append(
                         {"text": selected_workout, "completed": False}
                     )
-                    st.success(f"Added: {selected_workout}")
+                    st.success(f"Added: {selected_workout}")   
+                    track_added_goals(timeframe.lower())
+                    #update_progress_bars()
+                    time.sleep(0.5)
+                    st.rerun()                
 
             with right:
                 if goal_data[timeframe]:
                     st.markdown(f"### {timeframe} Goals:")
                     for idx, goal in enumerate(goal_data[timeframe]):
                         col1, col2 = st.columns([0.9, 0.1])
-                        with col1:
-                            status = "✅" if goal["completed"] else "⬜"
-                            st.write(f"{status} {goal['text']}")
                         with col2:
                             if not goal["completed"]:
                                 if st.button("✔️", key=f"check_{timeframe}_{idx}"):
                                     goal["completed"] = True
+                                    track_checked_goals(timeframe.lower())
+                                    #update_progress_bars()
+                                    st.rerun()
+                        with col1:
+                            status = "✅" if goal["completed"] else "⬜"
+                            st.write(f"{status} {goal['text']}")
+             
+def display_goal_progress_bars(user_id):
+    total_daily_goals = st.session_state.get("total_daily_goals", 0)
+    total_weekly_goals = st.session_state.get("total_weekly_goals", 0)
+    total_monthly_goals = st.session_state.get("total_monthly_goals", 0)
+    checked_daily_goals = st.session_state.get("checked_daily_goals", 0)
+    checked_weekly_goals = st.session_state.get("checked_weekly_goals", 0)
+    checked_monthly_goals = st.session_state.get("checked_monthly_goals", 0)
 
+    # st.write("Daily Goals:", total_daily_goals)
+    # st.write("Weekly Goals:", total_weekly_goals)
+    # st.write("Monthly Goals:", total_monthly_goals)
+    # st.write("Checked Daily Goals:", checked_daily_goals)
+    # st.write("Checked Weekly Goals:", checked_weekly_goals)
+    # st.write("Checked Monthly Goals:", checked_monthly_goals)
+    # st.markdown("---")
+    
+    daily_progress = checked_daily_goals / total_daily_goals if total_daily_goals else 0
+    weekly_progress = checked_weekly_goals / total_weekly_goals if checked_weekly_goals else 0
+    monthly_progress = checked_monthly_goals / total_monthly_goals if checked_monthly_goals else 0
+
+    st.markdown("### 🎯 Goal Progress")
+
+    #with progress_bars:
+    st.progress(daily_progress, text="Daily Progress")
+    st.progress(weekly_progress, text="Weekly Progress")
+    st.progress(monthly_progress, text="Monthly Progress")
+
+def track_added_goals(timeframe):
+    if timeframe == "daily":
+        st.session_state.total_daily_goals += 1
+        st.write(st.session_state.total_daily_goals)
+    elif timeframe == "weekly":
+        st.session_state.total_weekly_goals += 1
+    elif timeframe == "monthly":
+        st.session_state.total_monthly_goals += 1
+
+def track_checked_goals(timeframe):
+    if timeframe == "daily":
+        st.session_state.checked_daily_goals += 1
+        st.write(st.session_state.checked_daily_goals)
+    elif timeframe == "weekly":
+        st.session_state.checked_weekly_goals += 1
+    elif timeframe == "monthly":
+        st.session_state.checked_monthly_goals += 1
 
 def display_preloaded_workout_logger():
     pass  # moved inside display_goal_creation_ui
