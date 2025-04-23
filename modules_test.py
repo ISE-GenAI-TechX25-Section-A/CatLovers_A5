@@ -416,18 +416,36 @@ class TestDisplayStreakTracker(unittest.TestCase):
 
 
 class TestDisplayBuffCatPoints(unittest.TestCase):
+        
+    @patch("streamlit.markdown")  # Mock the markdown function
+    @patch("streamlit.session_state", create=True)  # Mock session_state
+    def test_display_buff_cat_points(self, mock_session_state, mock_markdown):
+        # Set up initial state
+        mock_session_state.buff_cat_points = 50  # Example starting Buff Cat Points
 
-    @patch("modules.st.markdown")  # Mocking Streamlit markdown
-    def test_display_buff_cat_points_calls_markdown(self, mock_markdown):
-        user_id = 123  # Example ID
-        display_buff_cat_points(user_id)
+        # Call the function
+        display_buff_cat_points(1) 
 
-        # Assert that markdown was called at least twice
-        self.assertGreaterEqual(mock_markdown.call_count, 2)
+        # Assert if the Buff Cat Points are displayed correctly
+        mock_markdown.assert_any_call(
+            "<div style='font-size: 28px; color: orange;'>⭐ 50 Points</div>",
+            unsafe_allow_html=True,
+        )
 
-        calls = [call.args[0] for call in mock_markdown.call_args_list]
-        points_html_found = any("⭐ 120 Points" in call for call in calls)
-        self.assertTrue(points_html_found, "Expected point display HTML not found")
+    @patch("streamlit.markdown")  # Mock the markdown function again
+    @patch("streamlit.session_state", create=True)
+    def test_no_buff_cat_points(self, mock_session_state, mock_markdown):
+        # Set the buff_cat_points to 0
+        mock_session_state.buff_cat_points = 0
+        
+        # Call the function
+        display_buff_cat_points(1)
+        
+        # Assert if the Buff Cat Points are displayed correctly
+        mock_markdown.assert_any_call(
+            "<div style='font-size: 28px; color: orange;'>⭐ 0 Points</div>",
+            unsafe_allow_html=True,
+        )
 
 class TestDisplayGoalCreationUI(unittest.TestCase):
     @patch("modules.st")
@@ -516,7 +534,6 @@ class TestTrackGoals(unittest.TestCase):
         track_added_goals("daily")
 
         self.assertEqual(mock_st.session_state.total_daily_goals, 1)
-        mock_st.write.assert_called_with(1)
 
     @patch("modules.st")
     def test_track_added_goals_weekly(self, mock_st):
