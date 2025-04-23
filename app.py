@@ -20,6 +20,24 @@ from data_fetcher import (
 )
 
 st.set_page_config(page_title="Muscle Meow", page_icon="🐱💪", layout="wide")
+
+if "buff_cat_points" not in st.session_state:
+    st.session_state.buff_cat_points = 0
+
+if "goal_data" not in st.session_state:
+    st.session_state.goal_data = {"Daily": [], "Weekly": [], "Monthly": []}
+
+if "selected_exercises" not in st.session_state:
+    st.session_state.selected_exercises = []
+
+for key in [
+    "total_daily_goals", "checked_daily_goals",
+    "total_weekly_goals", "checked_weekly_goals",
+    "total_monthly_goals", "checked_monthly_goals"
+]:
+    if key not in st.session_state:
+        st.session_state[key] = 0
+        
 def login_page():
     """Displays the login page."""
     if "user_id" not in st.session_state:
