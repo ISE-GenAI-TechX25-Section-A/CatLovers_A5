@@ -22,7 +22,7 @@ except ValueError as e:
     st.stop()
 
 # Display welcome header
-st.image(Logo_path, width=100)
+st.image(Logo_path, width=300)
 st.title(f"Welcome, {user_profile.get('name', 'Athlete')}! 💪🐾")
 st.subheader("Get fit, stay pawsome! 🐱🔥")
 

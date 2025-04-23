@@ -38,7 +38,8 @@ def login_page():
             </style>
         """
         st.markdown(hide_sidebar_and_icon, unsafe_allow_html=True)
-
+        Logo_path = os.path.join("Images", "Muscle Meow.png")
+        st.image(Logo_path, width=300)
         st.title("Login to Muscle Meow🐱💪")
         user_id = st.text_input("🆔 Enter your user ID:")
 
