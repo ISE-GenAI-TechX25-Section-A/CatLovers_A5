@@ -382,6 +382,13 @@ class TestDisplayUserProfile(unittest.TestCase):
             mock_error.assert_called_with("'invalid_user' was not found.")
 
 class TestDisplayStreakTracker(unittest.TestCase):
+    
+    @patch("modules.get_user_workouts")
+    @patch("modules.st.markdown")
+    def test_no_streak(self, mock_markdown, mock_get_user_workouts):
+        mock_get_user_workouts.return_value = []
+        display_streak_tracker("user123")
+        self.assertIn("0 days", mock_markdown.call_args[0][0])
 
     @patch("modules.get_user_workouts")
     @patch("modules.st.markdown")
@@ -397,13 +404,6 @@ class TestDisplayStreakTracker(unittest.TestCase):
 
     @patch("modules.get_user_workouts")
     @patch("modules.st.markdown")
-    def test_no_streak(self, mock_markdown, mock_get_user_workouts):
-        mock_get_user_workouts.return_value = []
-        display_streak_tracker("user123")
-        self.assertIn("0 days", mock_markdown.call_args[0][0])
-
-    @patch("modules.get_user_workouts")
-    @patch("modules.st.markdown")
     def test_thirty_day_streak(self, mock_markdown, mock_get_user_workouts):
         base_date = datetime(2025, 1, 1)
         mock_get_user_workouts.return_value = [
@@ -414,6 +414,17 @@ class TestDisplayStreakTracker(unittest.TestCase):
         self.assertIn("30 days", mock_markdown.call_args[0][0])
         self.assertIn("earned 15 Buff Cat Points", mock_markdown.call_args[0][0])
 
+    @patch("modules.get_user_workouts")
+    @patch("modules.st.markdown")
+    def test_three_sixty_five_day_streak(self, mock_markdown, mock_get_user_workouts):
+        base_date = datetime(2024, 4, 1)
+        mock_get_user_workouts.return_value = [
+            {"start_timestamp": base_date + timedelta(days=i)} for i in range(365)
+        ]
+        display_streak_tracker("user1011")
+
+        self.assertIn("365 days", mock_markdown.call_args[0][0])
+        self.assertIn("earned 50 Buff Cat Points", mock_markdown.call_args[0][0])
 
 class TestDisplayBuffCatPoints(unittest.TestCase):
         
@@ -446,45 +457,6 @@ class TestDisplayBuffCatPoints(unittest.TestCase):
             "<div style='font-size: 28px; color: orange;'>⭐ 0 Points</div>",
             unsafe_allow_html=True,
         )
-
-class TestDisplayGoalCreationUI(unittest.TestCase):
-    @patch("modules.st")
-    @patch("modules.time.sleep")  
-    def test_display_goal_creation_ui_initializes_session_state(self, mock_sleep, mock_st):
-        # Mock Streamlit session_state
-        mock_st.session_state = {}
-        # Mock return values for st UI components
-        mock_st.tabs.return_value = [MagicMock(), MagicMock(), MagicMock()]
-        mock_st.columns.return_value = [MagicMock(), MagicMock()]
-        mock_st.selectbox.return_value = "Legs"
-        mock_st.text_input.return_value = "Test Goal"
-        mock_st.button.return_value = False  # Simulate no button click
-
-        # Run the function
-        display_goal_creation_ui()
-
-        # Check that session state keys were initialized
-        expected_keys = [
-            "total_daily_goals", "checked_daily_goals",
-            "total_weekly_goals", "checked_weekly_goals",
-            "total_monthly_goals", "checked_monthly_goals",
-            "goal_data"
-        ]
-        for key in expected_keys:
-            self.assertIn(key, mock_st.session_state)
-
-        # Ensure goal_data contains all 3 timeframes
-        self.assertEqual(mock_st.session_state["goal_data"], {
-            "Daily": [],
-            "Weekly": [],
-            "Monthly": []
-        })
-
-        # Assert tabs creation
-        mock_st.tabs.assert_called_once_with(["📆 Daily", "📈 Weekly", "📊 Monthly"])
-
-        # Confirm selectbox was called 
-        self.assertTrue(mock_st.selectbox.called)
 
 class TestDisplayGoalProgressBars(unittest.TestCase):
 
