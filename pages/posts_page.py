@@ -6,6 +6,7 @@ from streamlit_elements import elements, mui, html
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import time
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 
 userId = st.session_state.get("user_id", None)
@@ -36,11 +37,24 @@ for i in range(len(post_info)):
             if like_button:
                 st.write("You liked this post!")
         with col2:
-            comment_button = st.button("Comment", key=f"comment_{post_info[i]['post_id']}")
-            if comment_button:
-                comment = st.text_input("Write your comment")
-                done_button = st.button("Done")
-                if done_button:
+            post_id = post_info[i]['post_id']
+            comment_key = f"comment_text_{post_id}"
+            show_comment_box_key = f"show_comment_box_{post_id}"
+
+            # Show comment box when button is clicked
+            if st.button("Comment", key=f"comment_button_{post_id}"):
+                st.session_state[show_comment_box_key] = True
+
+            # Show the text input and done button if toggled on
+            if st.session_state.get(show_comment_box_key, False):
+                comment = st.text_input("Write your comment", key=comment_key)
+                if st.button("Done", key=f"done_button_{post_id}"):
                     if comment:
                         st.success(f"Added your comment!")
-                        st.write(f"Comment by {userId}: \n {comment}")  # Placeholder for comment functionality
+                        st.write(f"Comment by {userId}: \n {comment}")
+                    else:
+                        st.warning("Comment can't be empty.")
+                    # Reset state to hide input after done
+                    st.session_state[show_comment_box_key] = False
+                    time.sleep(1)
+                    st.rerun()
