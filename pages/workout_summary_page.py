@@ -11,35 +11,13 @@ from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get
 userId = st.session_state.get("user_id", None)
 workouts_list = get_user_workouts(userId)
 
-#def display_activity_summary(workouts_list):
-# """
-# Calculates the averages per workout of the workout characteristics
-# Displays a summary of the averages
-# Links to the "recent workouts" page
 
-# Parameters: 
-#     workouts_list: a list of workouts for a specified user
-#         workouts contain: 
-#             'workout_id'
-#             'start_timestamp'
-#             'end_timestamp'
-#             'start_lat_lng'
-#             'end_lat_lng'
-#             'distance'
-#             'steps'
-#             'calories_burned'
-
-# Returns: 
-#     Nothing
-
-# """
 distances = []
 calories = []
 steps = []
 begin = []
 end = []
-#workouts_list = get_user_sensor_data("user1", "workout1")
-#st.write(workouts_list)
+
 #get the data from each workout in the list
 for workout in workouts_list:
     distances.append(workout['distance'])
@@ -132,7 +110,6 @@ with col2:
         st.metric("Favorite Day of Week", fav_day_of_week)
         st.metric("Average Length of Workouts", workoutLength)
 
-#st.caption(f"Congratulations! Your favorite time to workout is {fav_time_of_day}. You work out most on {fav_day_of_week}. You burn an average of {avg_calories} calories in {workoutLength} time.")
 st.markdown('### ✨ Stats')
 st.markdown(
 f"""
@@ -145,7 +122,3 @@ unsafe_allow_html=True
 )
 
 st.bar_chart(days_of_week, x_label="Weekday", y_label="Frequency")
-
-# if __name__ == "__main__":
-#     userId = st.session_state.user_id
-#     display_activity_summary(get_user_workouts(userId))

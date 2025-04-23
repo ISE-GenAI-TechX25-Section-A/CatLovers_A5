@@ -10,17 +10,14 @@ import numpy as np
 from modules import display_post
 from datetime import datetime, timedelta
 import uuid
-#from pages.workout_summary_page import display_activity_summary
 
+#"""Displays the user's activity page with recent workouts, a summary, and a share button."""
 userId = st.session_state.get("user_id", None)
+# Fetch workouts
 workouts = get_user_workouts(userId)
 user_id = userId
-#def display_activity_page(user_id):
-#"""Displays the user's activity page with recent workouts, a summary, and a share button."""
 st.markdown("## 🔥 Your Activity")
 
-# Fetch workouts
-#workouts = get_user_workouts(userId)
 
 # Display Recent 3 Workouts
 st.markdown("### 🏃 Recent Workouts")
@@ -39,8 +36,6 @@ calories = []
 steps = []
 begin = []
 end = []
-#workouts_list = get_user_sensor_data("user1", "workout1")
-#st.write(workouts_list)
 #get the data from each workout in the list
 for workout in workouts:
     distances.append(workout['distance'])
@@ -148,7 +143,3 @@ if selected_workout and st.button("Share it!"):
     }
     display_post(post)
 
-# if __name__ == "__main__":
-#     userId = st.session_state.user_id
-#     display_activity_page(userId)
-    

@@ -1,8 +1,6 @@
 import streamlit as st
 import os
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile
-#from pages.ai_advice_page import display_genai_advice
-#from pages.posts_page import display_post
 
 if False:
     """
@@ -33,7 +31,6 @@ if False:
 
 userId = st.session_state.get("user_id", None)
 
-#def display_community_page(userId):
 # """
 # This page is a “home” page for socialization across the app. 
 # It includes:
@@ -65,12 +62,9 @@ for user in friends:
 
 # Sort posts by timestamp (newest first)
 posts.sort(key=lambda x: x["timestamp"], reverse=True)
-#st.write(posts)
 # Display first 10 posts or all posts from friends, whichever is smaller
 for post in posts[:min(len(posts), 10)]:
-    #for i in range(len(post)):
         with st.container():
-            #st.markdown('## 🤩 Your Posts')
             col1, col2 = st.columns([1, 5]) 
             with col1:
                 st.image(post['profile_image'], width=40) 
@@ -108,37 +102,7 @@ if advice.get("image"):
 st.info(advice.get("content", "You're doing great! Keep going! 💪"))
 
 #"""Displays the AI advice page."""
-#st.header("🤖 AI Trainer: Buff Cat's Wisdom")
 advice = get_genai_advice(userId)
 timestamp = advice.get("timestamp")
 content = advice.get("content")
 image = advice.get("image")
-#display_genai_advice(advice.get("timestamp"), advice.get("content"), advice.get("image"))
-
-
-
-
-#def display_genai_advice(timestamp, content, image=None):
-# #"""Display AI-generated motivational advice with an optional image."""
-# st.header("🤖 AI-Generated Advice")
-# st.markdown(f"**Date:** {timestamp}")
-# st.write(content)
-
-# if image:
-#     st.image(image, caption="Stay motivated!", use_container_width=True)
-
-# """Displays a user post in an Instagram-like style within the Streamlit app.
-
-# Args:
-#     post_info (dict): The post information containing the user_id, user_image,
-#                         timestamp, content, and post_image.
-
-# Returns:
-#     None
-# """
-#post_info = get_user_posts(userId)
-
-
-# if __name__ == "__main__":
-#     userId = st.session_state.user_id
-#     display_community_page(userId)

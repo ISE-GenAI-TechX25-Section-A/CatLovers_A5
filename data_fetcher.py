@@ -129,56 +129,6 @@ def get_user_sensor_data(user_id, workout_id):
         
     return sensor_data
 
-    
-
-    # sensor_data = []
-    # sensor_types = [
-    #     'accelerometer',
-    #     'gyroscope',
-    #     'pressure',
-    #     'temperature',
-    #     'heart_rate',
-    # ]
-    # for index in range(random.randint(5, 100)):
-    #     random_minute = str(random.randint(0, 59))
-    #     if len(random_minute) == 1:
-    #         random_minute = '0' + random_minute
-    #     timestamp = '2024-01-01 00:' + random_minute + ':00'
-    #     data = random.random() * 100
-    #     sensor_type = random.choice(sensor_types)
-    #     sensor_data.append(
-    #         {'sensor_type': sensor_type, 'timestamp': timestamp, 'data': data}
-    #     )
-    # print(sensor_data)
-    # return sensor_data
-
-
-# def get_user_workouts(user_id):
-#     """Returns a list of user's workouts.
-
-#     This function currently returns random data. You will re-write it in Unit 3.
-#     """
-#     workouts = []
-#     for index in range(random.randint(1, 3)):
-#         random_lat_lng_1 = (
-#             1 + random.randint(0, 100) / 100,
-#             4 + random.randint(0, 100) / 100,
-#         )
-#         random_lat_lng_2 = (
-#             1 + random.randint(0, 100) / 100,
-#             4 + random.randint(0, 100) / 100,
-#         )
-#         workouts.append({
-#             'workout_id': f'workout{index+1}',
-#             'start_timestamp': '2024-01-01 00:00:00',
-#             'end_timestamp': '2024-01-01 00:30:00',
-#             'start_lat_lng': random_lat_lng_1,
-#             'end_lat_lng': random_lat_lng_2,
-#             'distance': random.randint(0, 200) / 10.0,
-#             'steps': random.randint(0, 20000),
-#             'calories_burned': random.randint(0, 100),
-#         })
-#     return workouts
 
 def get_user_workouts(user_id):
     """Returns a list of user's workouts from BigQuery."""
@@ -235,15 +185,6 @@ def get_user_workouts(user_id):
     
     return workouts
 
-
-# def get_user_profile(user_id):
-#     """Returns information about the given user.
-
-#     This function currently returns random data. You will re-write it in Unit 3.
-#     """
-#     if user_id not in users:
-#         raise ValueError(f'User {user_id} not found.')
-#     return users[user_id]
 
 def get_user_profile(user_id):
     """Returns user profile info and friends list from BigQuery."""
@@ -306,20 +247,20 @@ def get_user_posts(user_id):
     client = bigquery.Client(project="brianrivera26techx25",location="US")
 
     query = f"""
-SELECT
+    SELECT
     p.PostId AS post_id,
     p.AuthorId AS user_id,
     p.Timestamp AS timestamp,
     p.Content AS content,
     p.ImageUrl AS image,
     u.ImageUrl AS profile_image
-FROM
+    FROM
     `brianrivera26techx25.ISE.Posts` p
-JOIN
+    JOIN
     `brianrivera26techx25.ISE.Users` u
-ON
+    ON
     p.AuthorId = u.UserId
-WHERE
+    WHERE
     p.AuthorId = @user_id
     """
 
@@ -390,6 +331,7 @@ def get_genai_advice(user_id):
             'content': f"😴 The cat is too sleepy to give advice right now... (Error: {str(e)})",
             'image': None
         }
+
 def get_available_exercises():
     url = "https://exercisedb.p.rapidapi.com/exercises"
 

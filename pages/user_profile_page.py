@@ -12,11 +12,8 @@ import uuid
 
 userId = st.session_state.get("user_id", None)
 
-#def display_user_profile_page(userId):
 user_profile = get_user_profile(userId)
-    #display_user_profile(user_profile)
 
-#def display_user_profile(user_profile):
 # Page header
 st.markdown("<h1 style='text-align: center; color: orange;'>😺💼 Muscle Meow: User Profile 📋</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align: center; color: gray;'>Every legend starts with a profile. 🔍</h3>", unsafe_allow_html=True)
@@ -25,7 +22,6 @@ st.markdown("<h3 style='text-align: center; color: gray;'>Every legend starts wi
 user_id = st.text_input("🆔 Enter user ID", "user1")
 if not user_id:
     st.warning("⚠️ Please enter a valid user ID.")
-    #return
 
 if st.button("📂 Show User Profile"):
     try:
@@ -41,7 +37,6 @@ if st.button("📂 Show User Profile"):
             
             col1, col2 = st.columns([1, 2])
             with col1:
-                # st.write(user['profile_image'])
                 st.image(user['profile_image'], caption="Profile Picture", width=250)
             with col2:
                 st.write(f"**Full Name:** {user['full_name']}")
@@ -63,7 +58,3 @@ if st.button("📂 Show User Profile"):
 
     except ValueError:
         st.error(f"'{user_id}' was not found.")
-
-# if __name__ == "__main__":
-#     userId = st.session_state.user_id
-#     display_user_profile_page(userId)

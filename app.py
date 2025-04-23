@@ -54,10 +54,6 @@ def login_page():
         display_app_page()
 
 
-    
-
-
-
 Logo_path = os.path.join("Images", "Muscle Meow.png")
 
 def display_app_page():
@@ -92,63 +88,7 @@ def display_app_page():
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-    # Sidebar Navigation
-    # st.sidebar.title("🏋️ Muscle Meow Navigation")
-    # page = st.sidebar.radio("Go to:", ["🏠 Home","🔎 Find User", "🤖 AI Advice", "📊 Workout Summary", "📅 Recent Workouts", "📝 Posts", "👥 Community Page","🔥 Activity"])
-
-    # # Page Routing
-    # if page == "🏠 Home":
-    #     st.switch_page("pages/home_page.py")
-    #     # Header Section
-    #     # user_profile = get_user_profile(userId)
-    #     # st.image(Logo_path, width=100)  
-    #     # st.title(f"Welcome, {user_profile.get('full_name', 'Athlete')}! 💪🐾") 
-    #     # st.subheader("Get fit, stay pawsome! 🐱🔥")
-    #     # # value = st.text_input('Enter your name')
-    #     # display_my_custom_component(value)
-    # elif page == "🔎 Find User":
-    #     st.switch_page("pages/user_profile_page.py")
-    #     #display_user_profile_page(userId)
-    # elif page == "🤖 AI Advice":
-    #     st.switch_page("pages/ai_advice_page.py")
-    #     #display_ai_advice(userId)
-    # elif page == "📊 Workout Summary":
-    #     st.switch_page("pages/workout_summary_page.py")
-    #     #display_activity_summary(get_user_workouts(userId))
-    # elif page == "📅 Recent Workouts":
-    #     st.switch_page("pages/recent_workouts_page.py")
-    #     #display_recent_workouts_page(userId)
-    # elif page == "📝 Posts":
-    #     st.switch_page("pages/posts_page.py")
-    #     # post_info = get_user_posts(userId)
-    #     # for i in range(len(post_info)):
-    #     #     display_post(post_info[i], i)
-    # elif page == "👥 Community Page":
-    #     st.switch_page("pages/community_page.py")
-    #     #display_community_page(userId)
-    # elif page == "🔥 Activity":
-    #     st.switch_page("pages/activity_page.py")
-    #     #display_activity_page(userId)
         
-        
-
-def display_ai_advice(userId):
-    """Displays the AI advice page."""
-    #st.header("🤖 AI Trainer: Buff Cat's Wisdom")
-    advice = get_genai_advice(userId)
-    display_genai_advice(advice.get("timestamp"), advice.get("content"), advice.get("image"))
-
-    # Ask the AI (future implementation coming soon :))
-    st.text_input("Ask Buff Cat a question...")
-
-def display_recent_workouts_page(userId):
-    get_user_profile(userId)
-    workouts_list = get_user_workouts(userId)
-    display_recent_workouts(workouts_list)
-
-def display_user_profile_page(userId):
-    user_profile = get_user_profile(userId)
-    display_user_profile(user_profile)
 
 # This is the starting point for your app. You do not need to change these lines
 if __name__ == '__main__':

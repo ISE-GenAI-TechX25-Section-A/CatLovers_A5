@@ -460,7 +460,6 @@ def display_streak_tracker(user_id):
 
 def display_buff_cat_points(user_id):
     points = 120
-    #st.markdown("### 💪 Buff Cat Points")
     st.markdown("""
         <style>
         .tooltip {
@@ -509,7 +508,6 @@ def display_buff_cat_points(user_id):
         unsafe_allow_html=True,
     )
 
-#progress_bars = st.container()
 
 def display_goal_creation_ui():
     for key in [
@@ -594,14 +592,6 @@ def display_goal_progress_bars(user_id):
     checked_daily_goals = st.session_state.get("checked_daily_goals", 0)
     checked_weekly_goals = st.session_state.get("checked_weekly_goals", 0)
     checked_monthly_goals = st.session_state.get("checked_monthly_goals", 0)
-
-    # st.write("Daily Goals:", total_daily_goals)
-    # st.write("Weekly Goals:", total_weekly_goals)
-    # st.write("Monthly Goals:", total_monthly_goals)
-    # st.write("Checked Daily Goals:", checked_daily_goals)
-    # st.write("Checked Weekly Goals:", checked_weekly_goals)
-    # st.write("Checked Monthly Goals:", checked_monthly_goals)
-    # st.markdown("---")
     
     daily_progress = checked_daily_goals / total_daily_goals if total_daily_goals else 0
     weekly_progress = checked_weekly_goals / total_weekly_goals if checked_weekly_goals else 0
@@ -609,7 +599,6 @@ def display_goal_progress_bars(user_id):
 
     st.markdown("### 🎯 Goal Progress")
 
-    #with progress_bars:
     st.progress(daily_progress, text="Daily Progress")
     st.progress(weekly_progress, text="Weekly Progress")
     st.progress(monthly_progress, text="Monthly Progress")

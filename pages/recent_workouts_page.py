@@ -10,12 +10,9 @@ from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get
 
 userId = st.session_state.get("user_id", None)
 
-#def display_recent_workouts_page(userId):
 get_user_profile(userId)
 workouts_list = get_user_workouts(userId)
-    #display_recent_workouts(workouts_list)
 
-#def display_recent_workouts(workouts_list):
 # Page header
 st.markdown("<h1 style='text-align: center; color: orange;'>🐱💪 Muscle Meow: Recent Workouts 🏋️‍♂️</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align: center; color: gray;'>Train like a beast, rest like a cat. 😼</h3>", unsafe_allow_html=True)
@@ -24,7 +21,6 @@ st.markdown("<h3 style='text-align: center; color: gray;'>Train like a beast, re
 user_id = st.text_input("🔍 Enter user ID", "user1")
 if not user_id:
     st.warning("⚠️ Please enter a valid user ID.")
-    #return
 if user_id != 'user1':
     workouts = get_user_workouts(user_id)
 else:
@@ -55,7 +51,3 @@ if st.button("🐾Show Recent Workouts🐾"):
     except ValueError:
         st.error(f"User '{user_id}' not found. Please try again.")
 
-
-# if __name__ == "__main__":
-#     userId = st.session_state.user_id
-#     display_recent_workouts_page(userId)

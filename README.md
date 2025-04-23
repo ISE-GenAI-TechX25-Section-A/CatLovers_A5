@@ -32,6 +32,7 @@ the following command while you are actively making changes).
 
 gcloud config set project brianrivera26techx25
 gcloud config set account 732301616375-compute@developer.gserviceaccount.com
+gcloud auth application-default login
 
 ```shell
 streamlit run app.py
