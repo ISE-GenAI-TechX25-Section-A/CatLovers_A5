@@ -6,7 +6,7 @@
 from google.cloud import bigquery
 import random
 import streamlit as st
-
+import requests
 import os
 import random
 import uuid
@@ -14,7 +14,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 import vertexai
 from vertexai.generative_models import GenerativeModel
-
 # Load environment variables
 load_dotenv()
 
@@ -325,6 +324,7 @@ WHERE
     """
 
     # Running the query with the user_id as a parameter
+
     query_job = client.query(query, job_config=bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
@@ -390,3 +390,16 @@ def get_genai_advice(user_id):
             'content': f"😴 The cat is too sleepy to give advice right now... (Error: {str(e)})",
             'image': None
         }
+def get_available_exercises():
+    url = "https://exercisedb.p.rapidapi.com/exercises"
+
+    querystring = {"limit":"15","offset":"0"}
+
+    headers = {
+        "x-rapidapi-key": "92e9145017mshb3d01f49ef46cdep163f84jsnfb4065ccd7e3",
+        # "x-rapidapi-key": os.getenv('RAPID_API_KEY'),
+        "x-rapidapi-host": "exercisedb.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    return response.json()

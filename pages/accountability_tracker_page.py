@@ -73,4 +73,7 @@ display_streak_tracker(userId)
 display_goal_progress_bars(userId)
 display_buff_cat_points(userId)
 display_goal_creation_ui()
+if st.button("Create Daily Workout Plan"):
+    st.switch_page("pages/add_workout_page.py")
+    
 display_preloaded_workout_logger()

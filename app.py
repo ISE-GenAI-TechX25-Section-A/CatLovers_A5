@@ -12,7 +12,7 @@
 
 import streamlit as st
 import os
-from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts, display_user_profile, display_activity_page 
+from modules import display_my_custom_component, display_post, display_genai_advice, display_activity_summary, display_recent_workouts, display_user_profile, display_activity_page, display_exercise_card
 from data_fetcher import get_user_posts, get_genai_advice, get_user_profile, get_user_sensor_data, get_user_workouts
 
 from data_fetcher import (
@@ -54,6 +54,9 @@ def login_page():
         display_app_page()
 
 
+    
+
+
 
 Logo_path = os.path.join("Images", "Muscle Meow.png")
 
@@ -70,6 +73,7 @@ def display_app_page():
             st.Page("pages/workout_summary_page.py", title="📊 Workout Summary"),
             st.Page("pages/recent_workouts_page.py", title="📅 Recent Workouts"),
             st.Page("pages/activity_page.py", title="🔥 Activity"),
+            st.Page("pages/add_workout_page.py", title="🔥 Exercises"),
         ],
         "Friends":[
             st.Page("pages/user_profile_page.py", title="🔎 Find User"),

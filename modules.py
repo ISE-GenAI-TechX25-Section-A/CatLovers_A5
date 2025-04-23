@@ -634,3 +634,50 @@ def track_checked_goals(timeframe):
 
 def display_preloaded_workout_logger():
     pass  # moved inside display_goal_creation_ui
+
+
+def display_exercise_card(ex, key_prefix=""):
+    # Unique key for each checkbox
+    checkbox_key = f"{key_prefix}_selected"
+
+    with st.container():
+        st.markdown(
+            f"""
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                <img src="{ex['gifUrl']}" style="width:150px; height:150px; border-radius: 10px;" />
+                <h4 style="margin-top: 1rem;">{ex['name']}</h4>
+                <p><strong>Target:</strong> {ex['target']}</p>
+                <p><strong>Equipment:</strong> {ex['equipment']}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Checkbox for selection
+        selected = st.checkbox("Select this exercise", key=checkbox_key)
+
+        # Expander for instructions
+        with st.expander("Show Instructions", expanded=False):
+            for step in ex["instructions"]:
+                st.markdown(f"- {step}")
+
+        st.markdown("---")
+
+    return selected
+
+def display_exercises_list(exercises):
+    st.title("💪 Browse Exercises")
+    selected_exercises = []
+
+    for i, exercise in enumerate(exercises):
+        is_selected = display_exercise_card(exercise, key_prefix=f"ex_{i}")
+        if is_selected:
+            selected_exercises.append(exercise)
+
+    # Optional: Show selected below
+    if selected_exercises:
+        st.subheader("✅ Selected Exercises:")
+        for ex in selected_exercises:
+            st.markdown(f"- {ex['name']}")
+
+    return selected_exercises
