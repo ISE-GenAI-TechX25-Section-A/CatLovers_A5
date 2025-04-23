@@ -563,44 +563,92 @@ class TestTrackGoals(unittest.TestCase):
         self.assertEqual(mock_st.session_state.checked_monthly_goals, 4)
         mock_st.write.assert_not_called()
 
+def mock_columns(cols):
+    """Mocks st.columns to return a tuple of two MagicMock objects."""
+    mock1 = MagicMock()
+    mock2 = MagicMock()
+    return (mock1, mock2)
+# Test Case# Test Case
 class TestExerciseDisplay(unittest.TestCase):
-
-    @patch("modules.st.container")
-    @patch("modules.st.markdown")
-    @patch("modules.st.checkbox")
-    @patch("modules.st.expander")
-    def test_display_exercise_card(self, mock_expander, mock_checkbox, mock_markdown, mock_container):
-        # Mock exercise data
-        exercise = {
-            'gifUrl': 'https://example.com/gif.jpg',
-            'name': 'Push-Up',
-            'target': 'Chest',
-            'equipment': 'None',
-            'instructions': ['Step 1', 'Step 2', 'Step 3']
+    @patch("streamlit.container")
+    @patch("streamlit.columns", side_effect=mock_columns)
+    @patch("streamlit.image")
+    @patch("streamlit.markdown")
+    @patch("streamlit.checkbox", return_value=True) # Mock checkbox to return True for testing selection
+    @patch("streamlit.expander")
+    def test_display_exercise_card_selected(
+        self, mock_expander, mock_checkbox, mock_markdown, mock_image, mock_columns, mock_container
+    ):
+        exercise_data = {
+            "gifUrl": "example.gif",
+            "name": "Push-up",
+            "target": "chest",
+            "equipment": "body weight",
+            "instructions": ["Lie face down...", "Push your body up..."]
         }
+        key_prefix = "test_exercise"
 
-        mock_checkbox.return_value = True  # Simulate checkbox being selected
-        selected = display_exercise_card(exercise, key_prefix="test")
+        selected = display_exercise_card(exercise_data, key_prefix)
 
-        # Check that checkbox was called with the correct key
-        mock_checkbox.assert_called_with("Select this exercise", key="test_selected")
+        # Assert that streamlit functions were called
+        mock_container.assert_called_once()
+        mock_columns.assert_called_once_with([1, 2])
+        mock_image.assert_called_once_with("example.gif", width=120)
+        mock_markdown.assert_any_call("**Push-up**")
+        mock_markdown.assert_any_call("*Target:* chest")
+        mock_markdown.assert_any_call("*Equipment:* body weight")
+        mock_checkbox.assert_called_once_with("Select this exercise", key="test_exercise_selected")
+        mock_expander.assert_called_once_with("Show Instructions", expanded=False)
+        mock_markdown.assert_any_call("- Lie face down...")
+        mock_markdown.assert_any_call("- Push your body up...")
+        mock_markdown.assert_any_call("---")
 
-        # Check that markdown (HTML) for exercise card was generated
-        expected_html = '''
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-                <img src="https://example.com/gif.jpg" style="width:150px; height:150px; border-radius: 10px;" />
-                <h4 style="margin-top: 1rem;">Push-Up</h4>
-                <p><strong>Target:</strong> Chest</p>
-                <p><strong>Equipment:</strong> None</p>
-            </div>
-            '''
-        mock_markdown.assert_any_call(expected_html, unsafe_allow_html=True)
-        # Check that instructions were displayed
-        for step in exercise["instructions"]:
-            mock_markdown.assert_any_call(f"- {step}")
-
+        # Assert that the function returns the mocked checkbox state
         self.assertTrue(selected)
 
+    @patch("streamlit.container")
+    @patch("streamlit.columns", side_effect=mock_columns)
+    @patch("streamlit.image")
+    @patch("streamlit.markdown")
+    @patch("streamlit.checkbox", return_value=False) # Mock checkbox to return False for testing non-selection
+    @patch("streamlit.expander")
+    def test_display_exercise_card_not_selected(
+        self, mock_expander, mock_checkbox, mock_markdown, mock_image, mock_columns, mock_container
+    ):
+        exercise_data = {
+            "gifUrl": "another.gif",
+            "name": "Squat",
+            "target": "legs",
+            "equipment": "none",
+            "instructions": ["Stand with feet...", "Lower your hips..."]
+        }
+
+        selected = display_exercise_card(exercise_data)
+
+        # Assert that the function returns the mocked checkbox state
+        self.assertFalse(selected)
+
+    @patch("streamlit.container")
+    @patch("streamlit.columns", side_effect=mock_columns)
+    @patch("streamlit.image")
+    @patch("streamlit.markdown")
+    @patch("streamlit.checkbox", return_value=False)
+    @patch("streamlit.expander")
+    def test_display_exercise_card_no_prefix(
+        self, mock_expander, mock_checkbox, mock_markdown, mock_image, mock_columns, mock_container
+    ):
+        exercise_data = {
+            "gifUrl": "yet_another.gif",
+            "name": "Pull-up",
+            "target": "back",
+            "equipment": "pull-up bar",
+            "instructions": ["Grasp the bar...", "Pull yourself up..."]
+        }
+
+        display_exercise_card(exercise_data)
+
+        # Assert that the checkbox key is generated correctly without a prefix
+        mock_checkbox.assert_called_once_with("Select this exercise", key="_selected")
     @patch("modules.st.title")
     @patch("modules.st.subheader")
     @patch("modules.st.markdown")
