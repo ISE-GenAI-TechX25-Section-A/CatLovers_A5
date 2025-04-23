@@ -14,8 +14,9 @@ from streamlit.testing.v1 import AppTest
 import statistics
 from datetime import datetime, timedelta
 import streamlit as st
-from modules import display_post, display_activity_summary, display_genai_advice, display_recent_workouts, display_user_profile, display_streak_tracker
+from modules import display_post, display_activity_summary, display_genai_advice, display_recent_workouts, display_user_profile, display_streak_tracker, display_buff_cat_points, display_goal_creation_ui, display_goal_progress_bars, track_added_goals, track_checked_goals, display_exercise_card, display_exercises_list
 from unittest.mock import call
+from types import SimpleNamespace
 
 # Write your tests below
 
@@ -391,7 +392,6 @@ class TestDisplayStreakTracker(unittest.TestCase):
         ]
         
         display_streak_tracker("user123")
-
         self.assertIn("7 days", mock_markdown.call_args[0][0])
         self.assertIn("earned 5 Buff Cat Points", mock_markdown.call_args[0][0])
 
@@ -399,9 +399,7 @@ class TestDisplayStreakTracker(unittest.TestCase):
     @patch("modules.st.markdown")
     def test_no_streak(self, mock_markdown, mock_get_user_workouts):
         mock_get_user_workouts.return_value = []
-
         display_streak_tracker("user123")
-
         self.assertIn("0 days", mock_markdown.call_args[0][0])
 
     @patch("modules.get_user_workouts")
@@ -411,12 +409,221 @@ class TestDisplayStreakTracker(unittest.TestCase):
         mock_get_user_workouts.return_value = [
             {"start_timestamp": base_date + timedelta(days=i)} for i in range(30)
         ]
-        
         display_streak_tracker("user456")
 
         self.assertIn("30 days", mock_markdown.call_args[0][0])
         self.assertIn("earned 15 Buff Cat Points", mock_markdown.call_args[0][0])
 
+
+class TestDisplayBuffCatPoints(unittest.TestCase):
+
+    @patch("modules.st.markdown")  # Mocking Streamlit markdown
+    def test_display_buff_cat_points_calls_markdown(self, mock_markdown):
+        user_id = 123  # Example ID
+        display_buff_cat_points(user_id)
+
+        # Assert that markdown was called at least twice
+        self.assertGreaterEqual(mock_markdown.call_count, 2)
+
+        calls = [call.args[0] for call in mock_markdown.call_args_list]
+        points_html_found = any("⭐ 120 Points" in call for call in calls)
+        self.assertTrue(points_html_found, "Expected point display HTML not found")
+
+class TestDisplayGoalCreationUI(unittest.TestCase):
+    @patch("modules.st")
+    @patch("modules.time.sleep")  
+    def test_display_goal_creation_ui_initializes_session_state(self, mock_sleep, mock_st):
+        # Mock Streamlit session_state
+        mock_st.session_state = {}
+        # Mock return values for st UI components
+        mock_st.tabs.return_value = [MagicMock(), MagicMock(), MagicMock()]
+        mock_st.columns.return_value = [MagicMock(), MagicMock()]
+        mock_st.selectbox.return_value = "Legs"
+        mock_st.text_input.return_value = "Test Goal"
+        mock_st.button.return_value = False  # Simulate no button click
+
+        # Run the function
+        display_goal_creation_ui()
+
+        # Check that session state keys were initialized
+        expected_keys = [
+            "total_daily_goals", "checked_daily_goals",
+            "total_weekly_goals", "checked_weekly_goals",
+            "total_monthly_goals", "checked_monthly_goals",
+            "goal_data"
+        ]
+        for key in expected_keys:
+            self.assertIn(key, mock_st.session_state)
+
+        # Ensure goal_data contains all 3 timeframes
+        self.assertEqual(mock_st.session_state["goal_data"], {
+            "Daily": [],
+            "Weekly": [],
+            "Monthly": []
+        })
+
+        # Assert tabs creation
+        mock_st.tabs.assert_called_once_with(["📆 Daily", "📈 Weekly", "📊 Monthly"])
+
+        # Confirm selectbox was called 
+        self.assertTrue(mock_st.selectbox.called)
+
+class TestDisplayGoalProgressBars(unittest.TestCase):
+
+    @patch("modules.st")
+    def test_display_goal_progress_bars_with_values(self, mock_st):
+        # Set up mock session state with sample values
+        mock_st.session_state = {
+            "total_daily_goals": 4,
+            "checked_daily_goals": 2,
+            "total_weekly_goals": 5,
+            "checked_weekly_goals": 3,
+            "total_monthly_goals": 10,
+            "checked_monthly_goals": 5
+        }
+        display_goal_progress_bars("user123")
+
+        # Check that progress bars were called with correct percentages
+        mock_st.markdown.assert_called_with("### 🎯 Goal Progress")
+        mock_st.progress.assert_any_call(0.5, text="Daily Progress")   # 2/4
+        mock_st.progress.assert_any_call(0.6, text="Weekly Progress")  # 3/5
+        mock_st.progress.assert_any_call(0.5, text="Monthly Progress") # 5/10
+
+    @patch("modules.st")
+    def test_display_goal_progress_bars_with_zeros(self, mock_st):
+        # Simulate a case where no goals are set
+        mock_st.session_state = {
+            "total_daily_goals": 0,
+            "checked_daily_goals": 0,
+            "total_weekly_goals": 0,
+            "checked_weekly_goals": 0,
+            "total_monthly_goals": 0,
+            "checked_monthly_goals": 0
+        }
+
+        display_goal_progress_bars("user123")
+        # Should not raise division by zero
+        mock_st.progress.assert_any_call(0, text="Daily Progress")
+        mock_st.progress.assert_any_call(0, text="Weekly Progress")
+        mock_st.progress.assert_any_call(0, text="Monthly Progress")
+
+class TestTrackGoals(unittest.TestCase):
+
+    @patch("modules.st")
+    def test_track_added_goals_daily(self, mock_st):
+        mock_st.session_state = SimpleNamespace(total_daily_goals=0)
+        mock_st.write = MagicMock()
+        track_added_goals("daily")
+
+        self.assertEqual(mock_st.session_state.total_daily_goals, 1)
+        mock_st.write.assert_called_with(1)
+
+    @patch("modules.st")
+    def test_track_added_goals_weekly(self, mock_st):
+        mock_st.session_state = SimpleNamespace(total_weekly_goals=2)
+        mock_st.write = MagicMock()
+        track_added_goals("weekly")
+
+        self.assertEqual(mock_st.session_state.total_weekly_goals, 3)
+        mock_st.write.assert_not_called()
+
+    @patch("modules.st")
+    def test_track_added_goals_monthly(self, mock_st):
+        mock_st.session_state = SimpleNamespace(total_monthly_goals=5)
+        mock_st.write = MagicMock()
+        track_added_goals("monthly")
+
+        self.assertEqual(mock_st.session_state.total_monthly_goals, 6)
+        mock_st.write.assert_not_called()
+
+    @patch("modules.st")
+    def test_track_checked_goals_daily(self, mock_st):
+        mock_st.session_state = SimpleNamespace(checked_daily_goals=0)
+        mock_st.write = MagicMock()
+        track_checked_goals("daily")
+
+        self.assertEqual(mock_st.session_state.checked_daily_goals, 1)
+        mock_st.write.assert_called_with(1)
+
+    @patch("modules.st")
+    def test_track_checked_goals_weekly(self, mock_st):
+        mock_st.session_state = SimpleNamespace(checked_weekly_goals=1)
+        mock_st.write = MagicMock()
+        track_checked_goals("weekly")
+
+        self.assertEqual(mock_st.session_state.checked_weekly_goals, 2)
+        mock_st.write.assert_not_called()
+
+    @patch("modules.st")
+    def test_track_checked_goals_monthly(self, mock_st):
+        mock_st.session_state = SimpleNamespace(checked_monthly_goals=3)
+        mock_st.write = MagicMock()
+        track_checked_goals("monthly")
+
+        self.assertEqual(mock_st.session_state.checked_monthly_goals, 4)
+        mock_st.write.assert_not_called()
+
+class TestExerciseDisplay(unittest.TestCase):
+
+    @patch("modules.st.container")
+    @patch("modules.st.markdown")
+    @patch("modules.st.checkbox")
+    @patch("modules.st.expander")
+    def test_display_exercise_card(self, mock_expander, mock_checkbox, mock_markdown, mock_container):
+        # Mock exercise data
+        exercise = {
+            'gifUrl': 'https://example.com/gif.jpg',
+            'name': 'Push-Up',
+            'target': 'Chest',
+            'equipment': 'None',
+            'instructions': ['Step 1', 'Step 2', 'Step 3']
+        }
+
+        mock_checkbox.return_value = True  # Simulate checkbox being selected
+        selected = display_exercise_card(exercise, key_prefix="test")
+
+        # Check that checkbox was called with the correct key
+        mock_checkbox.assert_called_with("Select this exercise", key="test_selected")
+
+        # Check that markdown (HTML) for exercise card was generated
+        expected_html = '''
+            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                <img src="https://example.com/gif.jpg" style="width:150px; height:150px; border-radius: 10px;" />
+                <h4 style="margin-top: 1rem;">Push-Up</h4>
+                <p><strong>Target:</strong> Chest</p>
+                <p><strong>Equipment:</strong> None</p>
+            </div>
+            '''
+        mock_markdown.assert_any_call(expected_html, unsafe_allow_html=True)
+        # Check that instructions were displayed
+        for step in exercise["instructions"]:
+            mock_markdown.assert_any_call(f"- {step}")
+
+        self.assertTrue(selected)
+
+    @patch("modules.st.title")
+    @patch("modules.st.subheader")
+    @patch("modules.st.markdown")
+    @patch("modules.st.checkbox")
+    @patch("modules.st.container")
+    @patch("modules.st.expander")
+    def test_display_exercises_list(self, mock_expander, mock_container, mock_checkbox, mock_markdown, mock_subheader, mock_title):
+        # Mock a list of exercises
+        exercises = [
+            {'gifUrl': 'https://example.com/gif1.jpg', 'name': 'Push-Up', 'target': 'Chest', 'equipment': 'None', 'instructions': ['Step 1', 'Step 2']},
+            {'gifUrl': 'https://example.com/gif2.jpg', 'name': 'Squat', 'target': 'Legs', 'equipment': 'None', 'instructions': ['Step 1', 'Step 2']},
+        ]
+        mock_checkbox.return_value = True  # Simulate both checkboxes being selected
+        display_exercises_list(exercises)
+        mock_title.assert_called_once_with("💪 Browse Exercises")
+        # Check that display_exercise_card was called for each exercise
+        for i, exercise in enumerate(exercises):
+            mock_container.assert_called()
+            mock_checkbox.assert_any_call("Select this exercise", key=f"ex_{i}_selected")
+
+        mock_subheader.assert_called_with("✅ Selected Exercises:")
+        for exercise in exercises:
+            mock_markdown.assert_any_call(f"- {exercise['name']}")
 
 if __name__ == "__main__":
     unittest.main()
