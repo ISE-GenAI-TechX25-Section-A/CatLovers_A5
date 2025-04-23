@@ -425,6 +425,7 @@ def display_activity_page(user_id):
 
 # ACCOUNTABILITY TRACKER
 def display_streak_tracker(user_id):
+    points = st.session_state.buff_cat_points
     workouts_list = get_user_workouts(user_id)
     weekdays = [workout["start_timestamp"].date() for workout in workouts_list]
     weekdays.sort()
@@ -438,12 +439,16 @@ def display_streak_tracker(user_id):
 
     if streak == 7:
         congrats = "Good job on making it one week without missing a day! You've earned 5 Buff Cat Points!"
+        st.session_state.buff_cat_points += 5
     elif streak == 30:
         congrats = "Proud of you for making it 30 days without missing a day! You've earned 15 Buff Cat Points!"
+        st.session_state.buff_cat_points += 15
     elif streak == 180:
         congrats = "You're so awesome for making it 180 days without missing a day! You've earned 30 Buff Cat Points!"
+        st.session_state.buff_cat_points += 30
     elif streak == 365:
         congrats = "Wow, you made it one year without missing a day! You've earned 50 Buff Cat Points!"
+        st.session_state.buff_cat_points += 50
     else:
         congrats = ""
 
