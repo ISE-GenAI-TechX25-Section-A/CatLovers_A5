@@ -24,7 +24,8 @@ from data_fetcher import (
     get_user_sensor_data,
     get_user_workouts,
 )
-
+if "buff_cat_points" not in st.session_state:
+    st.session_state.buff_cat_points = 0
 
 # This one has been written for you as an example. You may change it as wanted.
 def display_my_custom_component(value):
@@ -463,8 +464,8 @@ def display_streak_tracker(user_id):
         unsafe_allow_html=True,
     )
 
-if "buff_cat_points" not in st.session_state:
-    st.session_state.buff_cat_points = 0
+# if "buff_cat_points" not in st.session_state:
+#     st.session_state.buff_cat_points = 0
 
 def display_buff_cat_points(user_id):
     points = st.session_state.buff_cat_points
