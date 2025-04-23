@@ -38,7 +38,8 @@ def login_page():
             </style>
         """
         st.markdown(hide_sidebar_and_icon, unsafe_allow_html=True)
-
+        Logo_path = os.path.join("Images", "Muscle Meow.png")
+        st.image(Logo_path, width=300)
         st.title("Login to Muscle Meow🐱💪")
         user_id = st.text_input("🆔 Enter your user ID:")
 
@@ -69,7 +70,7 @@ def display_app_page():
             st.Page("pages/workout_summary_page.py", title="📊 Workout Summary"),
             st.Page("pages/recent_workouts_page.py", title="📅 Recent Workouts"),
             st.Page("pages/activity_page.py", title="🔥 Activity"),
-            st.Page("pages/add_workout_page.py", title="🔥 Exercises"),
+            st.Page("pages/add_workout_page.py", title="💪 Exercises"),
         ],
         "Friends":[
             st.Page("pages/user_profile_page.py", title="🔎 Find User"),
