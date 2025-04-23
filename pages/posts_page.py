@@ -38,4 +38,9 @@ for i in range(len(post_info)):
         with col2:
             comment_button = st.button("Comment", key=f"comment_{post_info[i]['post_id']}")
             if comment_button:
-                st.write("Comment functionality is under development.")  # Placeholder for comment functionality
+                comment = st.text_input("Write your comment")
+                done_button = st.button("Done")
+                if done_button:
+                    if comment:
+                        st.success(f"Added your comment!")
+                        st.write(f"Comment by {userId}: \n {comment}")  # Placeholder for comment functionality

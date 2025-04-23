@@ -539,7 +539,6 @@ def display_goal_creation_ui():
                         )
                         st.success(f"Added {timeframe.lower()} goal: {new_goal}")
                         track_added_goals(timeframe.lower())
-                        #update_progress_bars()
                         time.sleep(0.5)
                         st.rerun()
                 st.markdown("### 🏋️ Track Preloaded Workouts")
@@ -565,7 +564,6 @@ def display_goal_creation_ui():
                     )
                     st.success(f"Added: {selected_workout}")   
                     track_added_goals(timeframe.lower())
-                    #update_progress_bars()
                     time.sleep(0.5)
                     st.rerun()                
 
@@ -579,7 +577,6 @@ def display_goal_creation_ui():
                                 if st.button("✔️", key=f"check_{timeframe}_{idx}"):
                                     goal["completed"] = True
                                     track_checked_goals(timeframe.lower())
-                                    #update_progress_bars()
                                     st.rerun()
                         with col1:
                             status = "✅" if goal["completed"] else "⬜"
