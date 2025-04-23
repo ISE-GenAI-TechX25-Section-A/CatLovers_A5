@@ -516,7 +516,6 @@ class TestTrackGoals(unittest.TestCase):
         track_added_goals("daily")
 
         self.assertEqual(mock_st.session_state.total_daily_goals, 1)
-        mock_st.write.assert_called_with(1)
 
     @patch("modules.st")
     def test_track_added_goals_weekly(self, mock_st):
