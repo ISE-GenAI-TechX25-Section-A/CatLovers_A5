@@ -73,7 +73,7 @@ def display_app_page():
             st.Page("pages/workout_summary_page.py", title="📊 Workout Summary"),
             st.Page("pages/recent_workouts_page.py", title="📅 Recent Workouts"),
             st.Page("pages/activity_page.py", title="🔥 Activity"),
-            st.Page("pages/add_workout_page.py", title="🔥 Exercises"),
+            st.Page("pages/add_workout_page.py", title="💪 Exercises"),
         ],
         "Friends":[
             st.Page("pages/user_profile_page.py", title="🔎 Find User"),

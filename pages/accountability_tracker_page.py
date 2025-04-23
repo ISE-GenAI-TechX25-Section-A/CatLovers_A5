@@ -9,8 +9,14 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import uuid
+from modules import display_goal_creation_ui
 
 userId = st.session_state.get("user_id", None)
+# Redirect trigger from workout page
+if st.session_state.get("redirect_to_accountability", False):
+    st.session_state.redirect_to_accountability = False
+    st.rerun()
+
 workouts_list = get_user_workouts(userId)
 
 col1, col2 = st.columns([1,1])

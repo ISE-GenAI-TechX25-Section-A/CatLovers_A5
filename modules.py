@@ -510,6 +510,13 @@ def display_buff_cat_points(user_id):
     )
 
 #progress_bars = st.container()
+# Session state key for selected workouts
+if "selected_exercises" not in st.session_state:
+    st.session_state.selected_exercises = []
+
+# Ensure goal_data is initialized early
+if "goal_data" not in st.session_state:
+    st.session_state["goal_data"] = {"Daily": [], "Weekly": [], "Monthly": []}
 
 def display_goal_creation_ui():
     for key in [
@@ -521,11 +528,19 @@ def display_goal_creation_ui():
 
     st.markdown("### 🛠️ Create New Fitness Goals")
 
-    goal_tabs = st.tabs(["📆 Daily", "📈 Weekly", "📊 Monthly"])
+    goal_data = st.session_state["goal_data"]
 
-    goal_data = st.session_state.setdefault(
-        "goal_data", {"Daily": [], "Weekly": [], "Monthly": []}
-    )
+    # ✅ Inject selected exercises into daily goals BEFORE rendering tabs
+    if st.session_state.selected_exercises:
+        for ex in st.session_state.selected_exercises:
+            if ex["name"] not in [g["text"] for g in goal_data["Daily"]]:
+                goal_data["Daily"].append(
+                    {"text": ex["name"], "completed": False}
+                )
+                track_added_goals("daily")
+        st.session_state.selected_exercises = []
+
+    goal_tabs = st.tabs(["📆 Daily", "📈 Weekly", "📊 Monthly"])
 
     for i, timeframe in enumerate(["Daily", "Weekly", "Monthly"]):
         with goal_tabs[i]:
@@ -541,10 +556,11 @@ def display_goal_creation_ui():
                         )
                         st.success(f"Added {timeframe.lower()} goal: {new_goal}")
                         track_added_goals(timeframe.lower())
-                        #update_progress_bars()
                         time.sleep(0.5)
                         st.rerun()
+
                 st.markdown("### 🏋️ Track Preloaded Workouts")
+
                 muscle_group = st.selectbox(
                     "Select Muscle Group",
                     ["Legs", "Upper Body", "Core"],
@@ -565,11 +581,10 @@ def display_goal_creation_ui():
                     goal_data[timeframe].append(
                         {"text": selected_workout, "completed": False}
                     )
-                    st.success(f"Added: {selected_workout}")   
+                    st.success(f"Added: {selected_workout}")
                     track_added_goals(timeframe.lower())
-                    #update_progress_bars()
                     time.sleep(0.5)
-                    st.rerun()                
+                    st.rerun()
 
             with right:
                 if goal_data[timeframe]:
@@ -581,7 +596,6 @@ def display_goal_creation_ui():
                                 if st.button("✔️", key=f"check_{timeframe}_{idx}"):
                                     goal["completed"] = True
                                     track_checked_goals(timeframe.lower())
-                                    #update_progress_bars()
                                     st.rerun()
                         with col1:
                             status = "✅" if goal["completed"] else "⬜"
@@ -617,7 +631,7 @@ def display_goal_progress_bars(user_id):
 def track_added_goals(timeframe):
     if timeframe == "daily":
         st.session_state.total_daily_goals += 1
-        st.write(st.session_state.total_daily_goals)
+        #st.write(st.session_state.total_daily_goals)
     elif timeframe == "weekly":
         st.session_state.total_weekly_goals += 1
     elif timeframe == "monthly":
@@ -637,26 +651,23 @@ def display_preloaded_workout_logger():
 
 
 def display_exercise_card(ex, key_prefix=""):
-    # Unique key for each checkbox
+    # Unique key to track checkbox per card
     checkbox_key = f"{key_prefix}_selected"
 
+    # Card container with image and info in 2-column layout
     with st.container():
-        st.markdown(
-            f"""
-            <div style="border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-                <img src="{ex['gifUrl']}" style="width:150px; height:150px; border-radius: 10px;" />
-                <h4 style="margin-top: 1rem;">{ex['name']}</h4>
-                <p><strong>Target:</strong> {ex['target']}</p>
-                <p><strong>Equipment:</strong> {ex['equipment']}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            st.image(ex["gifUrl"], width=120)
+        with col2:
+            st.markdown(f"**{ex['name']}**")
+            st.markdown(f"*Target:* {ex['target']}")
+            st.markdown(f"*Equipment:* {ex['equipment']}")
 
-        # Checkbox for selection
+        # Exercise selection checkbox
         selected = st.checkbox("Select this exercise", key=checkbox_key)
 
-        # Expander for instructions
+        # Instructions appear in a clean vertical block
         with st.expander("Show Instructions", expanded=False):
             for step in ex["instructions"]:
                 st.markdown(f"- {step}")
@@ -669,15 +680,34 @@ def display_exercises_list(exercises):
     st.title("💪 Browse Exercises")
     selected_exercises = []
 
-    for i, exercise in enumerate(exercises):
-        is_selected = display_exercise_card(exercise, key_prefix=f"ex_{i}")
-        if is_selected:
-            selected_exercises.append(exercise)
+    # Display in rows of 3 columns
+    for i in range(0, len(exercises), 3):
+        cols = st.columns(3)
+        for j in range(3):
+            if i + j < len(exercises):
+                with cols[j]:
+                    is_selected = display_exercise_card(exercises[i + j], key_prefix=f"ex_{i + j}")
+                    if is_selected:
+                        selected_exercises.append(exercises[i + j])
 
-    # Optional: Show selected below
+    # Display selected and store in session
     if selected_exercises:
         st.subheader("✅ Selected Exercises:")
         for ex in selected_exercises:
             st.markdown(f"- {ex['name']}")
+
+    if st.button("➕ Add to Daily Workout"):
+        new_names = {ex["name"] for ex in selected_exercises}
+        existing_names = {ex["name"] for ex in st.session_state.selected_exercises}
+        for ex in selected_exercises:
+            if ex["name"] not in existing_names:
+                st.session_state.selected_exercises.append(ex)
+
+        # ✅ Set refresh flag
+        st.session_state.redirect_to_accountability = True
+        st.success("Exercises added to daily workout!")
+        st.rerun()
+
+
 
     return selected_exercises
