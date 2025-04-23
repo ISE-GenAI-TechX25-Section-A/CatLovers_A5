@@ -11,6 +11,7 @@ from internals import create_component
 import statistics
 import calendar
 import time
+import random
 import streamlit as st
 from streamlit_elements import elements, mui, html
 import pandas as pd
@@ -457,9 +458,11 @@ def display_streak_tracker(user_id):
         unsafe_allow_html=True,
     )
 
+if "buff_cat_points" not in st.session_state:
+    st.session_state.buff_cat_points = 0
 
 def display_buff_cat_points(user_id):
-    points = 120
+    points = st.session_state.buff_cat_points
     #st.markdown("### 💪 Buff Cat Points")
     st.markdown("""
         <style>
@@ -596,6 +599,9 @@ def display_goal_creation_ui():
                                 if st.button("✔️", key=f"check_{timeframe}_{idx}"):
                                     goal["completed"] = True
                                     track_checked_goals(timeframe.lower())
+                                    awarded = random.randint(5, 15)
+                                    st.session_state.buff_cat_points += awarded
+                                    st.toast(f"🎉 You earned {awarded} Buff Cat Points!")
                                     st.rerun()
                         with col1:
                             status = "✅" if goal["completed"] else "⬜"
